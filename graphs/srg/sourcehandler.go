@@ -7,6 +7,7 @@ package srg
 import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/parser/shared"
@@ -48,16 +49,16 @@ func (sh srgSourceHandlerParser) Parse(source compilercommon.InputSource, input 
 	parser.Parse(sh.buildASTNode, importHandler, source, input)
 }
 
-func (sh srgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+func (sh srgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 	// Save the package map and source tracker for later resolution.
 	sh.srg.packageMap = packageMap
 	sh.srg.sourceTracker = sourceTracker
 
 	// Apply the changes to the graph.
-	sh.modifier.Apply()
+	sh.modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 }
 
-func (sh srgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (sh srgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 	g := sh.srg
 
 	// Collect any parse errors found and add them to the result.
@@ -65,6 +66,10 @@ func (sh srgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporte
 		sourceshape.NodePredicateErrorMessage)
 
 	for eit.Next() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		sourceRange, hasRange := sh.srg.SourceRangeOf(eit.Node())
 		if !hasRange {
 			panic("Missing source range")
@@ -79,6 +84,10 @@ func (sh srgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporte
 		BuildNodeIterator(sourceshape.NodeImportPredicateSubsource)
 
 	for fit.Next() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		// Load the package information.
 		packageInfo, err := g.getPackageForImport(fit.Node())
 		if err != nil || !packageInfo.IsSRGPackage() {
@@ -105,6 +114,10 @@ func (sh srgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporte
 		BuildNodeIterator()
 
 	for ait.Next() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		// Find the name of the alias.
 		decorator := ait.Node()
 		parameter, ok := decorator.TryGetNode(sourceshape.NodeDecoratorPredicateParameter)

@@ -7,6 +7,7 @@ package graph
 import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl/parser"
 )
@@ -39,9 +40,12 @@ func (sh irgSourceHandlerParser) Parse(source compilercommon.InputSource, input 
 	parser.Parse(&irgASTNode{rootNode}, sh.buildASTNode, source, input)
 }
 
-func (sh irgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+func (sh irgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 	// Apply the changes to the graph.
-	sh.modifier.Apply()
+	sh.modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
+	if cancelationHandle.WasCanceled() {
+		return
+	}
 
 	// Make sure we didn't encounter any errors.
 	if sh.irg.findAllNodes(parser.NodeTypeError).BuildNodeIterator().Next() {
@@ -50,13 +54,13 @@ func (sh irgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap
 
 	// Perform type collapsing.
 	modifier := sh.irg.layer.NewModifier()
-	defer modifier.Apply()
+	defer modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 
 	sh.irg.sourceTracker = sourceTracker
 	sh.irg.typeCollapser = createTypeCollapser(sh.irg, modifier)
 }
 
-func (sh irgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (sh irgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 	g := sh.irg
 
 	// Collect any parse errors found and add them to the result.
@@ -64,6 +68,10 @@ func (sh irgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporte
 		parser.NodePredicateErrorMessage)
 
 	for eit.Next() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		sourceRange, hasSourceRange := sh.irg.SourceRangeOf(eit.Node())
 		if !hasSourceRange {
 			continue

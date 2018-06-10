@@ -12,6 +12,7 @@ import (
 
 	"github.com/serulian/compiler/bundle"
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/integration"
@@ -68,10 +69,10 @@ func (t testParser) Parse(source compilercommon.InputSource, input string, impor
 	t.files[string(source)] = input
 }
 
-func (t testParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+func (t testParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 }
 
-func (t testParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (t testParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 }
 
 func TestBundling(t *testing.T) {
