@@ -196,19 +196,19 @@ type localPackageInfoForPathTest struct {
 var localPackageInfoForPathTests = []localPackageInfoForPathTest{
 	localPackageInfoForPathTest{"basic", "", false, true, PackageInfo{
 		kind:        "",
-		referenceId: "tests/basic",
+		referenceID: "tests/basic",
 		modulePaths: []compilercommon.InputSource{"tests/basic/anotherfile.json", "tests/basic/somefile.json"},
 	}},
 
 	localPackageInfoForPathTest{"basic/anotherfile", "", false, true, PackageInfo{
 		kind:        "",
-		referenceId: "tests/basic/anotherfile.json",
+		referenceID: "tests/basic/anotherfile.json",
 		modulePaths: []compilercommon.InputSource{"tests/basic/anotherfile.json"},
 	}},
 
 	localPackageInfoForPathTest{"relative", "", false, true, PackageInfo{
 		kind:        "",
-		referenceId: "tests/relative",
+		referenceID: "tests/relative",
 		modulePaths: []compilercommon.InputSource{"tests/relative/entrypoint.json", "tests/relative/relativelyimported.json"},
 	}},
 

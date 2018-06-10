@@ -26,40 +26,6 @@ const SerulianPackageDirectory = ".pkg"
 // when loading a package.
 const SerulianTestSuffix = "_test"
 
-// pathKind identifies the supported kind of paths
-type pathKind int
-
-const (
-	pathSourceFile pathKind = iota
-	pathLocalPackage
-	pathVCSPackage
-)
-
-// pathInformation holds information about a path to load.
-type pathInformation struct {
-	// referenceId is the unique reference ID for the path. Typically the path
-	// of the package or module itself, but can be anything, as long as it uniquely
-	// identifies this path.
-	referenceId string
-
-	// kind is the kind of path (source file, local package or vcs package).
-	kind pathKind
-
-	// path is the path being represented.
-	path string
-
-	// sourceKind is the source kind (empty string for `.seru`, `webidl` for "webidl")
-	sourceKind string
-
-	// sourceRange is the source range that *referenced* this path.
-	sourceRange compilercommon.SourceRange
-}
-
-// Returns the string representation of the given path.
-func (p *pathInformation) String() string {
-	return fmt.Sprintf("%v::%s::%s", int(p.kind), p.sourceKind, p.path)
-}
-
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
 // from a directory or set of directories.
 type PackageLoader struct {
@@ -104,41 +70,6 @@ type LoadResult struct {
 	Warnings      []compilercommon.SourceWarning // The warnings encountered, if any
 	PackageMap    LoadedPackageMap               // Map of packages loaded.
 	SourceTracker SourceTracker                  // Tracker of all source loaded.
-}
-
-// Config defines configuration for a PackageLoader.
-type Config struct {
-	// The entrypoint from which loading will begin. Can be a file or a directory.
-	Entrypoint Entrypoint
-
-	// Paths of directories to check for local copies of remote packages
-	// before performing VCS checkout.
-	VCSDevelopmentDirectories []string
-
-	// The source handlers to use to parse and import the loaded source files.
-	SourceHandlers []SourceHandler
-
-	// The path loader to use to load source files and directories.
-	PathLoader PathLoader
-
-	// If true, validation will always be called.
-	AlwaysValidate bool
-
-	// If true, VCS forced refresh (for branches and HEAD) will be skipped if cache
-	// exists.
-	SkipVCSRefresh bool
-}
-
-// NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
-func NewBasicConfig(rootSourceFilePath string, sourceHandlers ...SourceHandler) Config {
-	return Config{
-		Entrypoint:                Entrypoint(rootSourceFilePath),
-		VCSDevelopmentDirectories: []string{},
-		SourceHandlers:            sourceHandlers,
-		PathLoader:                LocalFilePathLoader{},
-		AlwaysValidate:            false,
-		SkipVCSRefresh:            false,
-	}
 }
 
 // NewPackageLoader creates and returns a new package loader for the given config.
@@ -340,7 +271,7 @@ func (p *PackageLoader) LocalPackageInfoForPath(path string, sourceKind string, 
 	if p.pathLoader.IsSourceFile(filePath) {
 		return PackageInfo{
 			kind:        sourceKind,
-			referenceId: filePath,
+			referenceID: filePath,
 			modulePaths: []compilercommon.InputSource{compilercommon.InputSource(filePath)},
 		}, nil
 	}
@@ -363,7 +294,7 @@ func (p *PackageLoader) packageInfoForPackageDirectory(packagePath string, sourc
 
 	packageInfo := &PackageInfo{
 		kind:        sourceKind,
-		referenceId: packagePath,
+		referenceID: packagePath,
 		modulePaths: make([]compilercommon.InputSource, 0),
 	}
 
@@ -447,7 +378,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 		// Note: existingCheckoutDir will be empty if there was an error loading the VCS.
 		if existingCheckoutDir != "" {
 			// Push the now-local directory onto the package loading channel.
-			p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, existingCheckoutDir.(string), packagePath.sourceRange)
+			p.pushPathWithId(packagePath.referenceID, packagePath.sourceKind, pathLocalPackage, existingCheckoutDir.(string), packagePath.sourceRange)
 			return
 		}
 	}
@@ -492,7 +423,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	}
 
 	// Push the now-local directory onto the package loading channel.
-	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, result.PackageDirectory, packagePath.sourceRange)
+	p.pushPathWithId(packagePath.referenceID, packagePath.sourceKind, pathLocalPackage, result.PackageDirectory, packagePath.sourceRange)
 }
 
 // loadLocalPackage loads the package found at the path relative to the package directory.
@@ -511,7 +442,7 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 	}
 
 	// Add the package itself to the package map.
-	p.packageMap.Add(packagePath.sourceKind, packagePath.referenceId, packageInfo)
+	p.packageMap.Add(packagePath.sourceKind, packagePath.referenceID, packageInfo)
 	if !moduleFound {
 		p.enqueueWarning(compilercommon.SourceWarningf(packagePath.sourceRange, "Package '%s' has no source files", packagePath.path))
 		return
@@ -523,9 +454,9 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	inputSource := compilercommon.InputSource(sourceFile.path)
 
 	// Add the file to the package map as a package of one file.
-	p.packageMap.Add(sourceFile.sourceKind, sourceFile.referenceId, PackageInfo{
+	p.packageMap.Add(sourceFile.sourceKind, sourceFile.referenceID, PackageInfo{
 		kind:        sourceFile.sourceKind,
-		referenceId: sourceFile.referenceId,
+		referenceID: sourceFile.referenceID,
 		modulePaths: []compilercommon.InputSource{inputSource},
 	})
 
