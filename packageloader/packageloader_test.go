@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 
 	"github.com/stretchr/testify/assert"
 
@@ -48,11 +49,11 @@ type testParser struct {
 	tt *testTracker
 }
 
-func (tt *testParser) Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker) {
+func (tt *testParser) Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 
 }
 
-func (tt *testParser) Verify(errorReporter ErrorReporter, warningReporter WarningReporter) {
+func (tt *testParser) Verify(errorReporter ErrorReporter, warningReporter WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 }
 
 func (tt *testParser) Parse(source compilercommon.InputSource, input string, importHandler ImportHandler) {

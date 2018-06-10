@@ -189,7 +189,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Apply all parser changes.
 	for _, parser := range p.parsers {
-		parser.Apply(result.PackageMap, result.SourceTracker)
+		parser.Apply(result.PackageMap, result.SourceTracker, p.cancelationHandle)
 	}
 
 	// Perform verification in all parsers.
@@ -204,7 +204,15 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 		}
 
 		for _, parser := range p.parsers {
-			parser.Verify(errorReporter, warningReporter)
+			parser.Verify(errorReporter, warningReporter, p.cancelationHandle)
+		}
+	}
+
+	if p.cancelationHandle.WasCanceled() {
+		return LoadResult{
+			Status:   false,
+			Errors:   make([]compilercommon.SourceError, 0),
+			Warnings: make([]compilercommon.SourceWarning, 0),
 		}
 	}
 

@@ -6,6 +6,7 @@ package packageloader
 
 import (
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 )
 
 // SourceHandler defines an interface for handling source files of a particular kind.
@@ -36,11 +37,11 @@ type SourceHandlerParser interface {
 
 	// Apply performs final application of all changes in the source handler. This method is called
 	// synchronously, and is typically used to apply the parsed structure to the underlying graph.
-	Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker)
+	Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker, cancelationHandle compilerutil.CancelationHandle)
 
 	// Verify performs verification of the loaded source. Any errors or warnings encountered
 	// should be reported via the given reporter callbacks.
-	Verify(errorReporter ErrorReporter, warningReporter WarningReporter)
+	Verify(errorReporter ErrorReporter, warningReporter WarningReporter, cancelationHandle compilerutil.CancelationHandle)
 }
 
 // PackageImportType identifies the types of imports.
