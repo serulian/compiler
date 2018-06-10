@@ -21,6 +21,11 @@ func NewCancelationHandle() CancelationHandle {
 	return &cancelationHandle{}
 }
 
+// NoopCancelationHandle returns a cancelation handle that cannot be canceled.
+func NoopCancelationHandle() CancelationHandle {
+	return noopCancelationHandle{}
+}
+
 // GetCancelationHandle returns either the existing cancelation handle (if not nil)
 // or a new no-op handle.
 func GetCancelationHandle(existing CancelationHandle) CancelationHandle {

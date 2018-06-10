@@ -15,8 +15,9 @@ import (
 // the go scheduler. Care must be taken to ensure that concurrent data structures are used for
 // any shared state (which itself should be minimized if at all possible)
 type orderedWorkQueue struct {
-	running bool
-	result  *orderedWorkQueueResult // Result of the run.
+	running  bool
+	canceled bool
+	result   *orderedWorkQueueResult // Result of the run.
 
 	jobs        *list.List           // The jobs. Only to be accessed by Enqueue and runQueue
 	keyCounter  map[interface{}]int  // The map of keys to their count. Only to be accessed by Enqueue and runQueue.
@@ -45,6 +46,7 @@ type orderedWorkQueueResult struct {
 func Queue() *orderedWorkQueue {
 	return &orderedWorkQueue{
 		running:    false,
+		canceled:   false,
 		jobs:       list.New(),
 		terminated: make(chan bool),
 
@@ -55,7 +57,7 @@ func Queue() *orderedWorkQueue {
 
 // performFn performs work over the given enqueued key and value. The function should return
 // whether the work completed successfully.
-type performFn func(key interface{}, value interface{}) bool
+type performFn func(key interface{}, value interface{}, cancel CancelFunction) bool
 
 // Enqueue adds a work item to be performed. The key argument gives a unique name to the job, preventing any other
 // jobs with the same name from being run concurrently. The value is extra data to be passed to the job.
@@ -93,7 +95,12 @@ func (q *orderedWorkQueue) Run() *orderedWorkQueueResult {
 
 // performJob performs the specified job. This is called under a goroutine.
 func (q *orderedWorkQueue) performJob(job orderedWorkQueueItem) {
-	if !job.performer(job.key, job.value) {
+	cancelFunc := func() {
+		q.result.Status = false
+		q.canceled = true
+	}
+
+	if !job.performer(job.key, job.value, cancelFunc) {
 		q.result.Status = false
 	}
 
@@ -104,7 +111,7 @@ func (q *orderedWorkQueue) performJob(job orderedWorkQueueItem) {
 // runQueue performs the internal running of the queue.
 func (q *orderedWorkQueue) runQueue() {
 	for {
-		if q.jobs.Len() == 0 {
+		if q.jobs.Len() == 0 || q.canceled {
 			// All done!
 			q.terminated <- true
 			return
@@ -163,6 +170,12 @@ func (q *orderedWorkQueue) runQueue() {
 
 		// Wait for the jobs to finish.
 		q.workTracker.Wait()
+
+		// Check if we've been canceled.
+		if q.canceled {
+			q.terminated <- true
+			return
+		}
 
 		// Remove the run jobs from the key counter map.
 		for _, jobRun := range jobsStarted {

@@ -45,7 +45,7 @@ type gdHandler func(gd IRGDeclaration)
 // ForEachType invokes the given handler for each collapsed type. Note that the handlers will
 // be invoked in parallel via goroutines, so care must be taken if access any shared resources.
 func (tc *TypeCollapser) ForEachType(handler ctHandler) {
-	process := func(key interface{}, value interface{}) bool {
+	process := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 		handler(key.(*CollapsedType))
 		return true
 	}
@@ -60,7 +60,7 @@ func (tc *TypeCollapser) ForEachType(handler ctHandler) {
 // ForEachGlobalDeclaration invokes the given handler for each global decl. Note that the handlers will
 // be invoked in parallel via goroutines, so care must be taken if access any shared resources.
 func (tc *TypeCollapser) ForEachGlobalDeclaration(handler gdHandler) {
-	process := func(key interface{}, value interface{}) bool {
+	process := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 		handler(key.(IRGDeclaration))
 		return true
 	}
@@ -139,7 +139,7 @@ func (tc *TypeCollapser) getType(modifier compilergraph.GraphLayerModifier, name
 // named `Number` will result in a single *CollapsedType with name `Number`, a backing
 // node in the IRG, and the list of those declarations contained within.
 func (tc *TypeCollapser) populate(modifier compilergraph.GraphLayerModifier) {
-	collapseDeclaration := func(key interface{}, value interface{}) bool {
+	collapseDeclaration := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 		name := key.(string)
 		declaration := value.(IRGDeclaration)
 

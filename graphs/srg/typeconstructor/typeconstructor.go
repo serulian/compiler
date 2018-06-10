@@ -191,7 +191,7 @@ func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 	}
 
 	// Define all type members.
-	buildTypeMembers := func(key interface{}, value interface{}) bool {
+	buildTypeMembers := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 		data := value.(typeMemberWork)
 		for _, member := range data.srgType.GetMembers() {
 			parent, _ := graph.GetTypeOrModuleForSourceNode(data.srgType.Node())
@@ -222,7 +222,7 @@ func (stc *srgTypeConstructor) DecorateMembers(decorater typegraph.GetMemberDeco
 	}
 
 	// Decorate all type members.
-	buildTypeMembers := func(key interface{}, value interface{}) bool {
+	buildTypeMembers := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 		data := value.(typeMemberWork)
 		for _, member := range data.srgType.GetMembers() {
 			_, hasMemberName := member.Name()
@@ -460,7 +460,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 }
 
 func (stc *srgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
-	validateTyperef := func(key interface{}, value interface{}) bool {
+	validateTyperef := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 		srgTypeRef := value.(srg.SRGTypeRef)
 		typeref, err := stc.BuildTypeRef(srgTypeRef, graph)
 
