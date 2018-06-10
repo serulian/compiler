@@ -15,31 +15,38 @@ var _ = fmt.Printf
 
 // globallyValidate validates the typegraph for global constraints (i.e. those shared by all
 // types constructed, regardless of source)
-func (g *TypeGraph) globallyValidate() bool {
-	var status = true
-
+func (g *TypeGraph) globallyValidate(cancelationHandle compilerutil.CancelationHandle) {
 	// The modifier will be used to decorate errors.
 	modifier := g.layer.NewModifier()
-	defer modifier.Apply()
+	defer modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 
 	// Ensure structures do not reference non-struct, non-serializable types.
-	g.ForEachTypeDecl([]NodeType{NodeTypeStruct}, func(typeDecl TGTypeDecl) {
-		if !g.checkStructuralType(typeDecl, modifier) {
-			status = false
+	g.ForEachTypeDecl([]NodeType{NodeTypeStruct}, func(typeDecl TGTypeDecl) bool {
+		if cancelationHandle.WasCanceled() {
+			return false
 		}
+
+		g.checkStructuralType(typeDecl, modifier)
+		return true
 	})
 
 	// Ensure that classes and agents only compose other agents.
-	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) {
-		if !g.checkComposition(typeDecl, modifier) {
-			status = false
+	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) bool {
+		if cancelationHandle.WasCanceled() {
+			return false
 		}
+
+		g.checkComposition(typeDecl, modifier)
+		return true
 	})
 
 	// Ensure that async functions are under modules and have fully structural types.
 	for _, member := range g.AsyncMembers() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		if !member.IsStatic() || member.Parent().IsType() {
-			status = false
 			g.decorateWithError(
 				modifier.Modify(member.GraphNode),
 				"Asynchronous functions must be declared under modules: '%v' defined under %v %v",
@@ -65,7 +72,6 @@ func (g *TypeGraph) globallyValidate() bool {
 		}
 
 		if serr := returnType.EnsureStructural(); serr != nil {
-			status = false
 			g.decorateWithError(
 				modifier.Modify(member.GraphNode),
 				"Asynchronous function %v must return a structural type: %v",
@@ -75,7 +81,6 @@ func (g *TypeGraph) globallyValidate() bool {
 		// Check the function's parameters.
 		for _, parameterType := range memberType.Parameters() {
 			if serr := parameterType.EnsureStructural(); serr != nil {
-				status = false
 				g.decorateWithError(
 					modifier.Modify(member.GraphNode),
 					"Parameters of asynchronous function %v must be structural: %v",
@@ -85,28 +90,27 @@ func (g *TypeGraph) globallyValidate() bool {
 
 		// Ensure the function has no generics.
 		if member.HasGenerics() {
-			status = false
 			g.decorateWithError(
 				modifier.Modify(member.GraphNode),
 				"Asynchronous function %v cannot have generics",
 				member.Name())
 		}
 	}
-
-	return status
 }
 
 // validatePrincipals ensures that all `with` compositions match the principal type of the agents
 // specified.
-func (g *TypeGraph) validatePrincipals() bool {
-	var status = true
-
+func (g *TypeGraph) validatePrincipals(cancelationHandle compilerutil.CancelationHandle) {
 	modifier := g.layer.NewModifier()
-	defer modifier.Apply()
+	defer modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 
-	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) {
+	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) bool {
 		// Make sure the class/agent implements the agent type's principal type.
 		for _, agent := range typeDecl.ComposedAgents() {
+			if cancelationHandle.WasCanceled() {
+				return false
+			}
+
 			agentTypeRef := agent.AgentType()
 			if !agentTypeRef.IsRefToAgent() {
 				continue
@@ -114,7 +118,6 @@ func (g *TypeGraph) validatePrincipals() bool {
 
 			principalTypeRef, hasPrincipalType := agentTypeRef.ReferredType().PrincipalType()
 			if !hasPrincipalType {
-				status = false
 				g.decorateWithError(
 					modifier.Modify(typeDecl.GraphNode),
 					"Type '%s' is an agent type but is missing a defined principal type", typeDecl.Name())
@@ -122,7 +125,6 @@ func (g *TypeGraph) validatePrincipals() bool {
 			}
 
 			if serr := typeDecl.GetTypeReference().CheckSubTypeOf(principalTypeRef); serr != nil {
-				status = false
 				g.decorateWithError(
 					modifier.Modify(typeDecl.GraphNode),
 					"Type '%s' composes agent type '%s' but does not match its expected principal type '%s': %s",
@@ -130,9 +132,9 @@ func (g *TypeGraph) validatePrincipals() bool {
 				continue
 			}
 		}
-	})
 
-	return status
+		return true
+	})
 }
 
 // checkComposition ensures that all types composed into the given type are agents.
@@ -186,8 +188,12 @@ func (g *TypeGraph) checkStructuralType(structType TGTypeDecl, modifier compiler
 
 // defineAllImplicitMembers defines the implicit members (new() constructor, etc) on all
 // applicable types.
-func (g *TypeGraph) defineAllImplicitMembers() {
+func (g *TypeGraph) defineAllImplicitMembers(cancelationHandle compilerutil.CancelationHandle) {
 	for _, typeDecl := range g.TypeDecls() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		g.defineImplicitMembers(typeDecl)
 	}
 }
@@ -365,17 +371,14 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 }
 
 // checkForDuplicateNames ensures that there are not duplicate names defined in the graph.
-func (g *TypeGraph) checkForDuplicateNames() bool {
-	var hasError = false
-
+func (g *TypeGraph) checkForDuplicateNames(cancelationHandle compilerutil.CancelationHandle) {
 	modifier := g.layer.NewModifier()
-	defer modifier.Apply()
+	defer modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 
 	ensureUniqueName := func(typeOrMember TGTypeOrMember, parent TGTypeOrModule, nameMap map[string]bool) bool {
 		name := typeOrMember.Name()
 		if _, ok := nameMap[name]; ok {
 			g.decorateWithError(modifier.Modify(typeOrMember.Node()), "%s '%s' redefines name '%s' under %s '%s'", typeOrMember.Title(), name, name, parent.Title(), parent.Name())
-			hasError = true
 			return false
 		}
 
@@ -393,7 +396,6 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 			name := generic.Name()
 			if _, ok := genericMap[name]; ok {
 				g.decorateWithError(modifier.Modify(generic.GraphNode), "Generic '%s' is already defined under %s '%s'", name, typeOrMember.Title(), typeOrMember.Name())
-				hasError = true
 				continue
 			}
 
@@ -404,10 +406,18 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 	packageNameMap := newPackageNameMap()
 
 	// Check all module members.
-	g.ForEachModule(func(module TGModule) {
+	g.ForEachModule(func(module TGModule) bool {
+		if cancelationHandle.WasCanceled() {
+			return false
+		}
+
 		moduleMembers := map[string]bool{}
 
 		for _, member := range module.Members() {
+			if cancelationHandle.WasCanceled() {
+				return false
+			}
+
 			// Ensure the member name is unique.
 			isUniqueInModule := ensureUniqueName(member, module, moduleMembers)
 			isExported := member.IsExported()
@@ -416,7 +426,6 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 			if isUniqueInModule && isExported {
 				if existing, ok := packageNameMap.CheckAndTrack(module, member); !ok {
 					g.decorateWithError(modifier.Modify(member.GraphNode), "Exported name '%s' is already defined under package %s as '%s' %s", member.Name(), module.PackagePath(), existing.Title(), existing.Name())
-					hasError = true
 				}
 			}
 
@@ -424,7 +433,6 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 			if isExported && member.IsField() && member.IsStatic() {
 				if !member.IsReadOnly() {
 					g.decorateWithError(modifier.Modify(member.GraphNode), "Exported module field '%s' must be declared as constant to be exported", member.Name())
-					hasError = true
 				}
 			}
 
@@ -433,6 +441,10 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 		}
 
 		for _, typeDecl := range module.Types() {
+			if cancelationHandle.WasCanceled() {
+				return false
+			}
+
 			// Ensure the type name is unique.
 			isUniqueInModule := ensureUniqueName(typeDecl, module, moduleMembers)
 
@@ -440,7 +452,6 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 			if isUniqueInModule && typeDecl.IsExported() && typeDecl.TypeKind() != AliasType {
 				if existing, ok := packageNameMap.CheckAndTrack(module, typeDecl); !ok {
 					g.decorateWithError(modifier.Modify(typeDecl.GraphNode), "Exported name '%s' is already defined under package %s as '%s' %s", typeDecl.Name(), module.PackagePath(), existing.Title(), existing.Name())
-					hasError = true
 				}
 			}
 
@@ -457,18 +468,23 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 				ensureUniqueGenerics(typeMember)
 			}
 		}
-	})
 
-	return hasError
+		return true
+	})
 }
 
 // defineFullComposition copies any composed members over to types, as well as type checking
 // for composition cycles.
-func (g *TypeGraph) defineFullComposition() {
+func (g *TypeGraph) defineFullComposition(cancelationHandle compilerutil.CancelationHandle) {
 	modifier := g.layer.NewModifier()
-	defer modifier.Apply()
+	defer modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 
-	buildComposition := func(key interface{}, value interface{}) bool {
+	buildComposition := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
+		if cancelationHandle.WasCanceled() {
+			cancel()
+			return false
+		}
+
 		typeDecl := value.(TGTypeDecl)
 		processor := typeCompositionProcessor{typeDecl, modifier, g}
 		return processor.processComposition()

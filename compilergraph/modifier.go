@@ -32,6 +32,9 @@ type GraphLayerModifier interface {
 
 	// Close closes the modifier, discarding any enqueued changes.
 	Close()
+
+	// ApplyOrClose applies the modifier if the given apply bool is true.
+	ApplyOrClose(apply bool)
 }
 
 // createNewModifier creates a new, concrete graph modifier.
@@ -125,6 +128,15 @@ func (gl *graphLayerModifierStruct) Apply() {
 func (gl *graphLayerModifierStruct) Close() {
 	gl.wg.Wait()
 	gl.closeChannel <- true
+}
+
+// ApplyOrClose applies the modifier if the given apply bool is true.
+func (gl *graphLayerModifierStruct) ApplyOrClose(apply bool) {
+	if apply {
+		gl.Apply()
+	} else {
+		gl.Close()
+	}
 }
 
 // AsNode returns the ModifiableGraphNode as a GraphNode. Note that the node will not

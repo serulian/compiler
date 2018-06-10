@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
 	webidl "github.com/serulian/compiler/webidl/graph"
@@ -105,7 +106,8 @@ func TestGraphs(t *testing.T) {
 		}
 
 		// Construct the type graph.
-		result, _ := typegraph.BuildTypeGraphWithOption(graph, typegraph.BuildForTesting, GetConstructor(testIRG), typegraph.NewBasicTypesConstructorForTesting(graph))
+		result, _ := typegraph.BuildTypeGraphWithOption(graph, typegraph.BuildForTesting, compilerutil.NoopCancelationHandle(),
+			GetConstructor(testIRG), typegraph.NewBasicTypesConstructorForTesting(graph))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
