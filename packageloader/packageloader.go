@@ -51,6 +51,8 @@ type PackageLoader struct {
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
+
+	cancelationHandle compilerutil.CancelationHandle
 }
 
 // Library contains a reference to an external library to load, in addition to those referenced
@@ -108,6 +110,8 @@ func NewPackageLoader(config Config) *PackageLoader {
 		vcsLockMap:     compilerutil.CreateLockMap(),
 
 		finished: make(chan bool, 1),
+
+		cancelationHandle: compilerutil.GetCancelationHandle(config.cancelationHandle),
 	}
 }
 
@@ -169,6 +173,15 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Tell the goroutines to quit.
 	p.finished <- true
+
+	// If canceled, return immediately.
+	if p.cancelationHandle.WasCanceled() {
+		return LoadResult{
+			Status:   false,
+			Errors:   make([]compilercommon.SourceError, 0),
+			Warnings: make([]compilercommon.SourceWarning, 0),
+		}
+	}
 
 	// Save the package map.
 	result.PackageMap = p.packageMap.Build()
@@ -338,6 +351,10 @@ func (p *PackageLoader) pushPath(kind pathKind, sourceKind string, path string, 
 
 // pushPathWithId adds a path to be processed by the package loader, with the specified ID.
 func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pathKind, path string, sourceRange compilercommon.SourceRange) string {
+	if p.cancelationHandle.WasCanceled() {
+		return pathId
+	}
+
 	p.workTracker.Add(1)
 	go p.loadAndParsePath(pathInformation{pathId, kind, path, sourceKind, sourceRange})
 	return pathId
@@ -346,6 +363,10 @@ func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pa
 // loadAndParsePath parses or loads a specific path.
 func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 	defer p.workTracker.Done()
+
+	if p.cancelationHandle.WasCanceled() {
+		return
+	}
 
 	// Ensure we have not already seen this path and kind.
 	pathKey := currentPath.String()
@@ -368,6 +389,10 @@ func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 
 // loadVCSPackage loads the package found at the given VCS path.
 func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
+	if p.cancelationHandle.WasCanceled() {
+		return
+	}
+
 	// Lock on the package path to ensure no other checkouts occur for this path.
 	pathLock := p.vcsLockMap.GetLock(packagePath.path)
 	pathLock.Lock()

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/serulian/compiler/compilercommon"
 
@@ -351,4 +352,64 @@ func TestLocalLoader(t *testing.T) {
 
 	assertFileImported(t, tt, result, "startingfile.json")
 	assertFileImported(t, tt, result, "anotherfile.json")
+}
+
+type BlockingPathLoader struct{}
+
+func (tpl BlockingPathLoader) VCSPackageDirectory(entrypoint Entrypoint) string {
+	return ""
+}
+
+func (tpl BlockingPathLoader) Exists(path string) (bool, error) {
+	_, err := tpl.LoadSourceFile(path)
+	return err == nil, nil
+}
+
+func (tpl BlockingPathLoader) LoadSourceFile(path string) ([]byte, error) {
+	time.Sleep(30 * time.Millisecond)
+	if path == "startingfile.json" {
+		return []byte(`{
+				"Imports": ["anotherfile"]
+			}
+			`), nil
+	}
+
+	return []byte{}, fmt.Errorf("Could not find file: %s", path)
+}
+
+func (tpl BlockingPathLoader) IsSourceFile(path string) bool {
+	return path == "startingfile.json" || path == "anotherfile.json"
+}
+
+func (tpl BlockingPathLoader) LoadDirectory(path string) ([]DirectoryEntry, error) {
+	return []DirectoryEntry{}, fmt.Errorf("Invalid path: %s", path)
+}
+
+func (tpl BlockingPathLoader) GetRevisionID(path string) (int64, error) {
+	return 1, nil
+}
+
+func TestCancelation(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: cmap.New(),
+	}
+
+	config := Config{
+		Entrypoint:                Entrypoint("startingfile.json"),
+		SourceHandlers:            []SourceHandler{tt.createHandler()},
+		VCSDevelopmentDirectories: []string{},
+		PathLoader:                BlockingPathLoader{},
+	}
+
+	cancelable, cancel := config.WithCancel()
+	loader := NewPackageLoader(cancelable)
+
+	go func() {
+		// Cancel the load.
+		time.Sleep(15 * time.Millisecond)
+		cancel()
+	}()
+
+	result := loader.Load()
+	assert.False(t, result.Status, "Expected cancelation")
 }

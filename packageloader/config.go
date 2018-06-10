@@ -4,6 +4,10 @@
 
 package packageloader
 
+import (
+	"github.com/serulian/compiler/compilerutil"
+)
+
 // Config defines configuration for a PackageLoader.
 type Config struct {
 	// The entrypoint from which loading will begin. Can be a file or a directory.
@@ -25,6 +29,23 @@ type Config struct {
 	// If true, VCS forced refresh (for branches and HEAD) will be skipped if cache
 	// exists.
 	SkipVCSRefresh bool
+
+	// cancelationHandle holds a handle for cancelation of the package loading, if any.
+	cancelationHandle compilerutil.CancelationHandle
+}
+
+// WithCancel returns the config with added support for cancelation.
+func (c Config) WithCancel() (Config, compilerutil.CancelFunction) {
+	handle := compilerutil.NewCancelationHandle()
+	return Config{
+		Entrypoint:                c.Entrypoint,
+		VCSDevelopmentDirectories: c.VCSDevelopmentDirectories,
+		SourceHandlers:            c.SourceHandlers,
+		PathLoader:                c.PathLoader,
+		AlwaysValidate:            c.AlwaysValidate,
+		SkipVCSRefresh:            c.SkipVCSRefresh,
+		cancelationHandle:         handle,
+	}, handle.Cancel
 }
 
 // NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
