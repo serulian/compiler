@@ -7,7 +7,10 @@
 package grok
 
 import (
+	"sync"
+
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
 
@@ -25,25 +28,69 @@ type Groker struct {
 	// libraries holds the libraries to be imported.
 	libraries []packageloader.Library
 
+	// pathLoader is the path loader to use.
+	pathLoader packageloader.PathLoader
+
+	// scopePathMap, if not empty, indicates the paths that should be considered by the
+	// compiler when scoping.
+	scopePathMap map[compilercommon.InputSource]bool
+
 	// currentHandle returns the currently cached handle, if any.
 	currentHandle *Handle
 
-	// pathLoader is the path loader to use.
-	pathLoader packageloader.PathLoader
+	// buildingHandleCancel is the cancel function for the handle currently building, if any.
+	buildingHandleCancel compilerutil.CancelFunction
+
+	// buildHandleLock defines a lock around the cancelation of an existing handle build
+	// and the start of a new one.
+	buildHandleLock *sync.Mutex
+}
+
+// Config defines the config for creating a Grok.
+type Config struct {
+	// EntrypointPath is the path to the entrypoint of the project being groked.
+	EntrypointPath string
+
+	// VCSDevelopmentDirectories defines the development directories (if any) to use.
+	VCSDevelopmentDirectories []string
+
+	// Libraries holds the libraries to be imported.
+	Libraries []packageloader.Library
+
+	// PathLoader is the path loader to use.
+	PathLoader packageloader.PathLoader
+
+	// ScopePaths, if not empty, indicates the paths that should be considered by the
+	// compiler when scoping.
+	ScopePaths []compilercommon.InputSource
 }
 
 // NewGroker returns a new Groker for the given entrypoint file/directory path.
 func NewGroker(entrypointPath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library) *Groker {
-	return NewGrokerWithPathLoader(entrypointPath, vcsDevelopmentDirectories, libraries, packageloader.LocalFilePathLoader{})
+	return NewGrokerWithConfig(Config{
+		EntrypointPath:            entrypointPath,
+		VCSDevelopmentDirectories: vcsDevelopmentDirectories,
+		Libraries:                 libraries,
+		PathLoader:                packageloader.LocalFilePathLoader{},
+		ScopePaths:                []compilercommon.InputSource{},
+	})
 }
 
-// NewGrokerWithPathLoader returns a new Groker for the given entrypoint file/directory path.
-func NewGrokerWithPathLoader(entrypointPath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library, pathLoader packageloader.PathLoader) *Groker {
+// NewGrokerWithConfig returns a new Groker with the given config.
+func NewGrokerWithConfig(config Config) *Groker {
+	scopePathMap := map[compilercommon.InputSource]bool{}
+	for _, path := range config.ScopePaths {
+		scopePathMap[path] = true
+	}
+
 	return &Groker{
-		entrypoint:                packageloader.Entrypoint(entrypointPath),
-		vcsDevelopmentDirectories: vcsDevelopmentDirectories,
-		libraries:                 libraries,
-		pathLoader:                pathLoader,
+		entrypoint:                packageloader.Entrypoint(config.EntrypointPath),
+		vcsDevelopmentDirectories: config.VCSDevelopmentDirectories,
+		libraries:                 config.Libraries,
+		pathLoader:                config.PathLoader,
+		scopePathMap:              scopePathMap,
+
+		buildHandleLock: &sync.Mutex{},
 	}
 }
 
@@ -64,34 +111,14 @@ func (g *Groker) GetHandle() (Handle, error) {
 }
 
 // GetHandleWithOption returns a handle for querying the Grok toolkit.
-func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption, pathFilters ...compilercommon.InputSource) (Handle, error) {
-	pathFiltersMap := map[compilercommon.InputSource]bool{}
-	if len(pathFilters) > 0 {
-		for _, path := range pathFilters {
-			pathFiltersMap[path] = true
-		}
-	}
-
+func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Handle, error) {
 	// If there is a cached handle, return it if nothing has changed.
 	// TODO: Support partial re-build here once supported by the rest of the pipeline.
 	currentHandle := g.currentHandle
 	if currentHandle != nil {
 		handle := *currentHandle
 		if freshnessOption == HandleAllowStale {
-			var allPathsFound = true
-			if len(pathFilters) > 0 && len(handle.pathFiltersMap) > 0 {
-				// Make sure the paths specified are in the handle.
-				for _, path := range pathFilters {
-					if _, ok := handle.pathFiltersMap[path]; !ok {
-						allPathsFound = false
-						break
-					}
-				}
-			}
-
-			if allPathsFound {
-				return handle, nil
-			}
+			return handle, nil
 		}
 
 		modified, err := handle.scopeResult.SourceTracker.ModifiedSourcePaths()
@@ -100,31 +127,73 @@ func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption, path
 		}
 	}
 
-	// Otherwise, rebuild the graph and cache it.
-	result, err := g.refresh(pathFiltersMap)
-	if err != nil {
-		return Handle{}, err
-	}
-
-	newHandle := Handle{
-		scopeResult:        result,
-		structureFinder:    result.Graph.SourceGraph().NewSourceStructureFinder(),
-		groker:             g,
-		importInspectCache: cmap.New(),
-		pathFiltersMap:     pathFiltersMap,
-	}
-
-	g.currentHandle = &newHandle
-	return newHandle, nil
+	handleResult := <-g.BuildHandle()
+	return handleResult.Handle, handleResult.Error
 }
 
-// refresh causes the Groker to perform a full refresh of the source, starting at the
-// root source file.
-func (g *Groker) refresh(pathFilters map[compilercommon.InputSource]bool) (scopegraph.Result, error) {
+// HandleResult is the result of a BuildHandle call.
+type HandleResult struct {
+	// Handle is the Grok handle constructed, if there was no error.
+	Handle Handle
+
+	// Error is the error that occurred, if any.
+	Error error
+}
+
+// BuildHandle builds a new handle for this Grok. If an existing handle is being
+// built, it will be canceled.
+func (g *Groker) BuildHandle() chan HandleResult {
+	resultChan := make(chan HandleResult, 1)
+
+	g.buildHandleLock.Lock()
+
+	// Cancel the exist handle construction.
+	cancelationFunction := g.buildingHandleCancel
+	if cancelationFunction != nil {
+		cancelationFunction()
+	}
+
+	// Spin off construction of a new handle.
+	internalChan, newCancelationFunction := g.startScope()
+	g.buildingHandleCancel = newCancelationFunction
+
+	g.buildHandleLock.Unlock()
+
+	go func() {
+		result := <-internalChan
+		if result.err != nil {
+			resultChan <- HandleResult{Handle{}, result.err}
+			return
+		}
+
+		newHandle := Handle{
+			scopeResult:        result.scopeResult,
+			structureFinder:    result.scopeResult.Graph.SourceGraph().NewSourceStructureFinder(),
+			groker:             g,
+			importInspectCache: cmap.New(),
+			pathFiltersMap:     g.scopePathMap,
+		}
+
+		g.currentHandle = &newHandle
+		resultChan <- HandleResult{newHandle, nil}
+	}()
+
+	return resultChan
+}
+
+type asyncResult struct {
+	scopeResult scopegraph.Result
+	err         error
+}
+
+// startScope causes the Groker to perform a full refresh of the source, starting at the
+// root source file. Returns a channel that will be filled with the result, as well as a
+// function for cancelation of the scoping.
+func (g *Groker) startScope() (chan asyncResult, compilerutil.CancelFunction) {
 	var scopeFilter scopegraph.ScopeFilter
-	if len(pathFilters) > 0 {
+	if len(g.scopePathMap) > 0 {
 		scopeFilter = func(path compilercommon.InputSource) bool {
-			return pathFilters[path]
+			return g.scopePathMap[path]
 		}
 	}
 
@@ -137,10 +206,12 @@ func (g *Groker) refresh(pathFilters map[compilercommon.InputSource]bool) (scope
 		ScopeFilter:               scopeFilter,
 	}
 
-	result, err := scopegraph.ParseAndBuildScopeGraphWithConfig(config)
-	if err != nil {
-		return scopegraph.Result{}, err
-	}
+	configWithCancel, canceler := config.WithCancel()
+	resultChan := make(chan asyncResult, 1)
+	go func() {
+		result, err := scopegraph.ParseAndBuildScopeGraphWithConfig(configWithCancel)
+		resultChan <- asyncResult{result, err}
+	}()
 
-	return result, nil
+	return resultChan, canceler
 }
