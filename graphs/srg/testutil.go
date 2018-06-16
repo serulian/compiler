@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 )
 
@@ -69,10 +70,10 @@ func (t testTypePackageLoaderParser) Parse(source compilercommon.InputSource, in
 
 }
 
-func (t testTypePackageLoaderParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+func (t testTypePackageLoaderParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 
 }
 
-func (t testTypePackageLoaderParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (t testTypePackageLoaderParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 
 }

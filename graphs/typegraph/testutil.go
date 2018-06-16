@@ -6,6 +6,7 @@ package typegraph
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 )
 
 // ConstructTypeGraphWithBasicTypes constructs a type graph populated with the given testing modules
@@ -21,7 +22,7 @@ func ConstructTypeGraphWithBasicTypes(modules ...TestModule) *TypeGraph {
 	fsg := g.NewGraphLayer("test", fakeNodeTypeTagged)
 	constructors = append(constructors, &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil})
 
-	built, _ := BuildTypeGraphWithOption(g, BuildForTesting, constructors...)
+	built, _ := BuildTypeGraphWithOption(g, BuildForTesting, compilerutil.NoopCancelationHandle(), constructors...)
 	return built.Graph
 }
 

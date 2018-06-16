@@ -11,7 +11,7 @@ import (
 // PackageInfo holds information about a loaded package.
 type PackageInfo struct {
 	kind        string                       // The source kind of the package.
-	referenceId string                       // The unique ID for this package.
+	referenceID string                       // The unique ID for this package.
 	modulePaths []compilercommon.InputSource // The module paths making up this package.
 }
 
@@ -26,8 +26,8 @@ func (pi PackageInfo) Kind() string {
 }
 
 // ReferenceId returns the unique reference ID for this package.
-func (pi PackageInfo) ReferenceId() string {
-	return pi.referenceId
+func (pi PackageInfo) ReferenceID() string {
+	return pi.referenceID
 }
 
 // ModulePaths returns the list of full paths of the modules in this package.

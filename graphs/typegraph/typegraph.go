@@ -54,11 +54,20 @@ const (
 
 // BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
 func BuildTypeGraph(graph compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) (*Result, error) {
-	return BuildTypeGraphWithOption(graph, FullBuild, constructors...)
+	return BuildTypeGraphWithOption(graph, FullBuild, compilerutil.NoopCancelationHandle(), constructors...)
+}
+
+func emptyResult(typeGraph *TypeGraph) *Result {
+	return &Result{
+		Status:   false,
+		Warnings: make([]compilercommon.SourceWarning, 0),
+		Errors:   make([]compilercommon.SourceError, 0),
+		Graph:    typeGraph,
+	}
 }
 
 // BuildTypeGraphWithOption returns a new TypeGraph that is populated from the given constructors.
-func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption BuildOption, constructors ...TypeGraphConstructor) (*Result, error) {
+func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption BuildOption, cancelationHandle compilerutil.CancelationHandle, constructors ...TypeGraphConstructor) (*Result, error) {
 	//Create the type graph.
 	typeGraph := &TypeGraph{
 		graph:              graph,
@@ -82,6 +91,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 
 	// Build all modules.
 	for _, constructor := range constructors {
+		if cancelationHandle.WasCanceled() {
+			return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+		}
+
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineModules(func() *moduleBuilder {
 			return &moduleBuilder{
@@ -94,6 +107,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 
 	// Build all types.
 	for _, constructor := range constructors {
+		if cancelationHandle.WasCanceled() {
+			return emptyResult(typeGraph), nil
+		}
+
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineTypes(func(moduleSourceNode compilergraph.GraphNode) *typeBuilder {
 			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode)
@@ -117,6 +134,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 		typeGraph.globalAliasedTypes[alias] = typeDecl
 	}
 
+	if cancelationHandle.WasCanceled() {
+		return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+	}
+
 	// Ensure expected basic types exist. They won't if we are in the middle of a load or the corelib
 	// has not been properly added as a library. Since this is a fatal issue, we terminate immediately.
 	if buildOption != BuildForTesting {
@@ -128,6 +149,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 
 	// Annotate all dependencies.
 	for _, constructor := range constructors {
+		if cancelationHandle.WasCanceled() {
+			return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+		}
+
 		modifier := typeGraph.layer.NewModifier()
 		annotator := Annotator{
 			issueReporterImpl{typeGraph, modifier},
@@ -137,11 +162,23 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 		modifier.Apply()
 	}
 
+	if cancelationHandle.WasCanceled() {
+		return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+	}
+
 	// Load the operators map. Requires the types loaded as it performs lookups of certain types (int, etc).
 	typeGraph.buildOperatorDefinitions()
 
+	if cancelationHandle.WasCanceled() {
+		return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+	}
+
 	// Build all initial definitions for members.
 	for _, constructor := range constructors {
+		if cancelationHandle.WasCanceled() {
+			return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+		}
+
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode)
@@ -165,6 +202,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 
 	// Decorate all the members.
 	for _, constructor := range constructors {
+		if cancelationHandle.WasCanceled() {
+			return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+		}
+
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DecorateMembers(func(memberSourceNode compilergraph.GraphNode) *MemberDecorator {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode)
@@ -182,21 +223,25 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 		modifier.Apply()
 	}
 
+	if cancelationHandle.WasCanceled() {
+		return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
+	}
+
 	// Check for duplicate types, members and generics.
-	typeGraph.checkForDuplicateNames()
+	typeGraph.checkForDuplicateNames(cancelationHandle)
 
 	// Perform global validation, including checking fields in structs.
-	typeGraph.globallyValidate()
+	typeGraph.globallyValidate(cancelationHandle)
 
 	// Handle composition checking and member cloning.
-	typeGraph.defineFullComposition()
+	typeGraph.defineFullComposition(cancelationHandle)
 
 	// Perform principal validation. This occurs after full composition to ensure that
 	// members composed from agents are present when checking principals.
-	typeGraph.validatePrincipals()
+	typeGraph.validatePrincipals(cancelationHandle)
 
 	// Define implicit members.
-	typeGraph.defineAllImplicitMembers()
+	typeGraph.defineAllImplicitMembers(cancelationHandle)
 
 	// If there are no errors yet, validate everything.
 	if _, hasError := typeGraph.layer.StartQuery().In(NodePredicateError).TryGetNode(); !hasError {
@@ -206,6 +251,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 			constructor.Validate(reporter, typeGraph)
 		}
 		modifier.Apply()
+	}
+
+	if cancelationHandle.WasCanceled() {
+		return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
 	}
 
 	// Collect any errors generated during construction.
@@ -226,6 +275,10 @@ func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption Bui
 		errNode := node.GetNode(NodePredicateError)
 		msg := errNode.Get(NodePredicateErrorMessage)
 		result.Errors = append(result.Errors, compilercommon.NewSourceError(sourceRange, msg))
+	}
+
+	if cancelationHandle.WasCanceled() {
+		return emptyResult(typeGraph), fmt.Errorf("Construction was canceled")
 	}
 
 	return result, nil
@@ -309,14 +362,18 @@ func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
 	return types
 }
 
-type moduleHandler func(module TGModule)
+type moduleHandler func(module TGModule) bool
 
 // ForEachModule executes the given function for each defined module in the graph. Note
 // that the functions will be executed in *parallel*, so care must be taken to ensure there aren't
 // any inconsistent accesses or writes.
 func (g *TypeGraph) ForEachModule(handler moduleHandler) {
-	process := func(key interface{}, value interface{}) bool {
-		handler(key.(TGModule))
+	process := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
+		result := handler(key.(TGModule))
+		if !result {
+			cancel()
+			return false
+		}
 		return true
 	}
 
@@ -327,14 +384,18 @@ func (g *TypeGraph) ForEachModule(handler moduleHandler) {
 	workqueue.Run()
 }
 
-type typeDeclHandler func(typeDecl TGTypeDecl)
+type typeDeclHandler func(typeDecl TGTypeDecl) bool
 
 // ForEachTypeDecl executes the given function for each defined type matching the type kinds. Note
 // that the functions will be executed in *parallel*, so care must be taken to ensure there aren't
 // any inconsistent accesses or writes.
 func (g *TypeGraph) ForEachTypeDecl(typeKinds []NodeType, handler typeDeclHandler) {
-	process := func(key interface{}, value interface{}) bool {
-		handler(key.(TGTypeDecl))
+	process := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
+		result := handler(key.(TGTypeDecl))
+		if !result {
+			cancel()
+			return false
+		}
 		return true
 	}
 
@@ -354,9 +415,9 @@ func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphN
 
 	if node.Kind() == NodeTypeModule {
 		return TGModule{node, g}, true
-	} else {
-		return TGTypeDecl{node, g}, true
 	}
+
+	return TGTypeDecl{node, g}, true
 }
 
 // TypeOrMembersUnderPackage returns all types or members defined under the given package.

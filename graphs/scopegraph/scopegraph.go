@@ -14,6 +14,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
@@ -93,33 +94,6 @@ var (
 	Tooling = BuildTarget{"tooling", true, true, true, false}
 )
 
-// Config defines the configuration for scoping.
-type Config struct {
-	// Entrypoint is the entrypoint path from which to begin scoping.
-	Entrypoint packageloader.Entrypoint
-
-	// VCSDevelopmentDirectories are the paths to the development directories, if any, that
-	// override VCS imports.
-	VCSDevelopmentDirectories []string
-
-	// Libraries defines the libraries, if any, to import along with the root source file.
-	Libraries []packageloader.Library
-
-	// Target defines the target of the scope building.
-	Target BuildTarget
-
-	// PathLoader defines the path loader to use when parsing.
-	PathLoader packageloader.PathLoader
-
-	// ScopeFilter defines the filter, if any, to use when scoping. If specified, only those entrypoints
-	// for which the filter returns true, will be scoped.
-	ScopeFilter ScopeFilter
-
-	// LanguageIntegration defines the language integrations to be used when performing parsing and scoping. If not specified,
-	// the integrations are loaded from the binary's directory.
-	LanguageIntegrations []integration.LanguageIntegration
-}
-
 // ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
 // starting at the given root source file.
 func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) (Result, error) {
@@ -136,6 +110,9 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 // starting at the root source file specified in configuration. If an *internal error* occurs, it is
 // returned as the `err`. Parsing and scoping errors are returned in the Result.
 func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
+	cancelationHandle := compilerutil.GetCancelationHandle(config.cancelationHandle)
+
+	// Ensure we have a valid entrypoint.
 	entrypointExists, err := config.Entrypoint.IsValid(config.PathLoader)
 	if err != nil {
 		return Result{}, err
@@ -175,27 +152,31 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		}
 	}
 
+	// Configure the various source handlers.
 	sourceHandlers := []packageloader.SourceHandler{sourcegraph.SourceHandler()}
 	for _, langIntegration := range langIntegrations {
 		sourceHandlers = append(sourceHandlers, langIntegration.SourceHandler())
 	}
 
-	// Conduct package and library loading.
-	loader := packageloader.NewPackageLoader(packageloader.Config{
+	// Setup the package loading configuration, including support for cancelation.
+	packageLoaderConfig := packageloader.Config{
 		Entrypoint:                config.Entrypoint,
 		PathLoader:                config.PathLoader,
 		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		AlwaysValidate:            config.Target.alwaysValidate,
 		SkipVCSRefresh:            config.Target.skipVCSRefresh,
 		SourceHandlers:            sourceHandlers,
-	})
+	}
 
+	// Conduct package and library loading.
+	cancelableConfig := packageLoaderConfig.WithCancelationHandle(cancelationHandle)
+	loader := packageloader.NewPackageLoader(cancelableConfig)
 	loaderResult := loader.Load(config.Libraries...)
 
 	// Freeze the source graph.
 	sourcegraph.Freeze()
 
-	if !loaderResult.Status && !config.Target.continueWithErrors {
+	if !loaderResult.Status && (!config.Target.continueWithErrors || cancelationHandle.WasCanceled()) {
 		return Result{
 			Status:   false,
 			Errors:   loaderResult.Errors,
@@ -206,7 +187,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	// Construct the type graph.
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
-	typeResult, err := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
+	typeResult, err := typegraph.BuildTypeGraphWithOption(sourcegraph.Graph, typegraph.FullBuild, cancelationHandle, webidl.TypeConstructor(), srgConstructor)
 	if err != nil {
 		return Result{}, err
 	}
@@ -223,9 +204,9 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, langIntegrations, resolver, loader, config.ScopeFilter)
+	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, langIntegrations, resolver, loader, config.ScopeFilter, cancelationHandle)
 	return Result{
-		Status:               scopeResult.Status && typeResult.Status && loaderResult.Status,
+		Status:               scopeResult.Status && typeResult.Status && loaderResult.Status && !cancelationHandle.WasCanceled(),
 		Errors:               combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
 		Warnings:             combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
 		Graph:                scopeResult.Graph,
@@ -288,7 +269,7 @@ func (sg *ScopeGraph) MustGetLanguageIntegration(sourceGraphID string) integrati
 // Note that this method should *only* be used for transient nodes (i.e. expressions in something like Grok),
 // and that the scope created will not be saved anywhere once this method returns.
 func (sg *ScopeGraph) BuildTransientScope(transientNode compilergraph.GraphNode, parentImplementable srg.SRGImplementable) (proto.ScopeInfo, bool) {
-	builder := newScopeBuilder(sg, noopScopeApplier{})
+	builder := newScopeBuilder(sg, noopScopeApplier{}, compilerutil.NoopCancelationHandle())
 	context := scopeContext{
 		parentImplemented:          parentImplementable.GraphNode,
 		rootNode:                   parentImplementable.GraphNode,

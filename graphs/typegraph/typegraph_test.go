@@ -9,12 +9,24 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
+
+func TestCancelation(t *testing.T) {
+	handle := compilerutil.NewCancelationHandle()
+	handle.Cancel()
+
+	g, _ := compilergraph.NewGraph("-")
+	result, err := BuildTypeGraphWithOption(g, BuildForTesting, handle, NewBasicTypesConstructorForTesting(g))
+	assert.False(t, result.Status, "Expected cancelation")
+	assert.Equal(t, err.Error(), "Construction was canceled")
+}
 
 func TestModules(t *testing.T) {
 	graph := ConstructTypeGraphWithBasicTypes(

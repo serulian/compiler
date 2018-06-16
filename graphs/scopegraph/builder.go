@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/sourceshape"
@@ -46,20 +47,22 @@ type scopeBuilder struct {
 	nodeMap                cmap.ConcurrentMap
 	inferredParameterTypes cmap.ConcurrentMap
 
-	applier scopeBuilderApplier
+	applier           scopeBuilderApplier
+	cancelationHandle compilerutil.CancelationHandle
 
 	Status bool
 }
 
 // newScopeBuilder returns a new scope builder for the given scope graph.
-func newScopeBuilder(sg *ScopeGraph, applier scopeBuilderApplier) *scopeBuilder {
+func newScopeBuilder(sg *ScopeGraph, applier scopeBuilderApplier, cancelationHandle compilerutil.CancelationHandle) *scopeBuilder {
 	return &scopeBuilder{
 		sg: sg,
 
 		nodeMap:                cmap.New(),
 		inferredParameterTypes: cmap.New(),
 
-		applier: applier,
+		applier:           applier,
+		cancelationHandle: cancelationHandle,
 
 		Status: true,
 	}
@@ -379,6 +382,11 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeCont
 		return &result
 	}
 
+	if sb.cancelationHandle.WasCanceled() {
+		invalid := newScope().Invalid().GetScope()
+		return &invalid
+	}
+
 	built := <-sb.buildScopeWithContext(node, context)
 	return &built
 }
@@ -390,6 +398,11 @@ func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, cont
 	handler := sb.getScopeHandler(node)
 	resultChan := make(chan proto.ScopeInfo, 1)
 	go (func() {
+		if sb.cancelationHandle.WasCanceled() {
+			resultChan <- newScope().Invalid().GetScope()
+			return
+		}
+
 		result := handler(node, context)
 		if !result.GetIsValid() {
 			sb.Status = false

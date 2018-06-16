@@ -23,7 +23,7 @@ func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typeg
 	generatedSource := make([]esbuilder.SourceBuilder, len(modules))
 	queue := compilerutil.Queue()
 	for index, module := range modules {
-		fn := func(key interface{}, value interface{}) bool {
+		fn := func(key interface{}, value interface{}, cancel compilerutil.CancelFunction) bool {
 			generatedSource[key.(int)] = gen.generateModule(value.(typegraph.TGModule))
 			return true
 		}

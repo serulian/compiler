@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -22,7 +23,8 @@ import (
 
 // performConstruction performs the actual construction of the scope graph.
 func performConstruction(target BuildTarget, srg *srg.SRG, tdg *typegraph.TypeGraph, integrations []integration.LanguageIntegration,
-	resolver *typerefresolver.TypeReferenceResolver, packageLoader *packageloader.PackageLoader, filter ScopeFilter) Result {
+	resolver *typerefresolver.TypeReferenceResolver, packageLoader *packageloader.PackageLoader, filter ScopeFilter,
+	cancelationHandle compilerutil.CancelationHandle) Result {
 
 	integrationsMap := map[string]integration.LanguageIntegration{}
 	for _, integration := range integrations {
@@ -44,25 +46,25 @@ func performConstruction(target BuildTarget, srg *srg.SRG, tdg *typegraph.TypeGr
 
 	// Create a modifier to use for adding the scope created via the builder.
 	modifier := scopeGraph.layer.NewModifier()
-	builder := newScopeBuilder(scopeGraph, concreteScopeApplier{modifier})
+	builder := newScopeBuilder(scopeGraph, concreteScopeApplier{modifier}, cancelationHandle)
 
 	// Find all implicit lambda expressions and infer their argument types.
-	buildImplicitLambdaScopes(builder, filter)
+	buildImplicitLambdaScopes(builder, filter, cancelationHandle)
 
 	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
-	scopeEntrypoints(builder, filter)
+	scopeEntrypoints(builder, filter, cancelationHandle)
 
 	// Check for initialization dependency cycles.
-	checkInitializationCycles(builder, filter)
+	checkInitializationCycles(builder, filter, cancelationHandle)
 
 	// Determine promising nature of entrypoints.
 	if target.labelEntrypointPromising && builder.Status {
-		labelEntrypointPromising(builder, filter)
+		labelEntrypointPromising(builder, filter, cancelationHandle)
 	}
 
 	// Apply the scope changes. We must do this before getScopeWarnings/getScopeErrors to ensure the nodes
 	// are in the graph.
-	modifier.Apply()
+	modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 
 	// Collect any errors or warnings that were added.
 	return Result{
@@ -192,7 +194,7 @@ func (sg *ScopeGraph) inferMemberPromising(member typegraph.TGMember) bool {
 	}
 }
 
-func buildImplicitLambdaScopes(builder *scopeBuilder, filter ScopeFilter) {
+func buildImplicitLambdaScopes(builder *scopeBuilder, filter ScopeFilter, cancelationHandle compilerutil.CancelationHandle) {
 	var lwg sync.WaitGroup
 	lit := builder.sg.srg.ImplicitLambdaExpressions()
 	for lit.Next() {
@@ -204,7 +206,9 @@ func buildImplicitLambdaScopes(builder *scopeBuilder, filter ScopeFilter) {
 
 		lwg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			builder.inferLambdaParameterTypes(node, scopeContext{})
+			if !cancelationHandle.WasCanceled() {
+				builder.inferLambdaParameterTypes(node, scopeContext{})
+			}
 			lwg.Done()
 		})(node)
 	}
@@ -212,11 +216,15 @@ func buildImplicitLambdaScopes(builder *scopeBuilder, filter ScopeFilter) {
 	lwg.Wait()
 }
 
-func labelEntrypointPromising(builder *scopeBuilder, filter ScopeFilter) {
+func labelEntrypointPromising(builder *scopeBuilder, filter ScopeFilter, cancelationHandle compilerutil.CancelationHandle) {
 	labeler := newPromiseLabeler(builder)
 
 	iit := builder.sg.srg.EntrypointImplementations()
 	for iit.Next() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		if filter != nil && !filter(iit.Implementable().ContainingMember().Module().InputSource()) {
 			continue
 		}
@@ -226,6 +234,10 @@ func labelEntrypointPromising(builder *scopeBuilder, filter ScopeFilter) {
 
 	vit := builder.sg.srg.EntrypointVariables()
 	for vit.Next() {
+		if cancelationHandle.WasCanceled() {
+			return
+		}
+
 		if filter != nil && !filter(vit.Member().Module().InputSource()) {
 			continue
 		}
@@ -236,7 +248,7 @@ func labelEntrypointPromising(builder *scopeBuilder, filter ScopeFilter) {
 	builder.sg.dynamicPromisingNames = labeler.labelEntrypoints()
 }
 
-func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter) {
+func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter, cancelationHandle compilerutil.CancelationHandle) {
 	var wg sync.WaitGroup
 	iit := builder.sg.srg.EntrypointImplementations()
 	for iit.Next() {
@@ -247,7 +259,9 @@ func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter) {
 		wg.Add(1)
 		go (func(implementable srg.SRGImplementable) {
 			// Build the scope for the root node, blocking until complete.
-			builder.getScopeForRootNode(implementable.Node())
+			if !cancelationHandle.WasCanceled() {
+				builder.getScopeForRootNode(implementable.Node())
+			}
 			wg.Done()
 		})(iit.Implementable())
 	}
@@ -261,7 +275,9 @@ func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter) {
 		wg.Add(1)
 		go (func(member srg.SRGMember) {
 			// Build the scope for the variable/field, blocking until complete.
-			builder.getScopeForRootNode(member.Node())
+			if !cancelationHandle.WasCanceled() {
+				builder.getScopeForRootNode(member.Node())
+			}
 			wg.Done()
 		})(vit.Member())
 	}
@@ -269,7 +285,7 @@ func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter) {
 	wg.Wait()
 }
 
-func checkInitializationCycles(builder *scopeBuilder, filter ScopeFilter) {
+func checkInitializationCycles(builder *scopeBuilder, filter ScopeFilter, cancelationHandle compilerutil.CancelationHandle) {
 	var iwg sync.WaitGroup
 	vit := builder.sg.srg.EntrypointVariables()
 	for vit.Next() {
@@ -279,14 +295,15 @@ func checkInitializationCycles(builder *scopeBuilder, filter ScopeFilter) {
 
 		iwg.Add(1)
 		go (func(member srg.SRGMember) {
-			// For each static dependency, collect the tranisitive closure of the dependencies
-			// and ensure a cycle doesn't exist that circles back to this variable/field.
-			node := member.Node()
-			built := builder.getScopeForRootNode(node)
-			for _, staticDep := range built.GetStaticDependencies() {
-				builder.checkStaticDependencyCycle(node, staticDep, ordered_map.NewOrderedMap(), []typegraph.TGMember{})
+			if !cancelationHandle.WasCanceled() {
+				// For each static dependency, collect the tranisitive closure of the dependencies
+				// and ensure a cycle doesn't exist that circles back to this variable/field.
+				node := member.Node()
+				built := builder.getScopeForRootNode(node)
+				for _, staticDep := range built.GetStaticDependencies() {
+					builder.checkStaticDependencyCycle(node, staticDep, ordered_map.NewOrderedMap(), []typegraph.TGMember{})
+				}
 			}
-
 			iwg.Done()
 		})(vit.Member())
 	}
