@@ -166,9 +166,14 @@ func (g *Groker) BuildHandle() chan HandleResult {
 			return
 		}
 
+		scopeResult := result.scopeResult
+		if scopeResult.Graph == nil {
+			return
+		}
+
 		newHandle := Handle{
-			scopeResult:        result.scopeResult,
-			structureFinder:    result.scopeResult.Graph.SourceGraph().NewSourceStructureFinder(),
+			scopeResult:        scopeResult,
+			structureFinder:    scopeResult.Graph.SourceGraph().NewSourceStructureFinder(),
 			groker:             g,
 			importInspectCache: cmap.New(),
 			pathFiltersMap:     g.scopePathMap,
