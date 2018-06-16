@@ -1,5 +1,37 @@
 # Change Log
 
+## [v0.3.0](https://github.com/serulian/compiler/tree/v0.3.0) (2018-06-16)
+[Full Changelog](https://github.com/serulian/compiler/compare/v0.2.0...v0.3.0)
+
+**Implemented enhancements:**
+
+- Add support for cancelation [\#290](https://github.com/serulian/compiler/pull/290) ([josephschorr](https://github.com/josephschorr))
+- Disallow repeated fields in structural new expressions [\#287](https://github.com/serulian/compiler/pull/287) ([josephschorr](https://github.com/josephschorr))
+- Fix type completion in Grok [\#282](https://github.com/serulian/compiler/pull/282) ([josephschorr](https://github.com/josephschorr))
+- Allow lambda parameters in inline lambdas to have explicitly declared types [\#277](https://github.com/serulian/compiler/pull/277) ([josephschorr](https://github.com/josephschorr))
+- Add support for constant fields at the module level [\#276](https://github.com/serulian/compiler/pull/276) ([josephschorr](https://github.com/josephschorr))
+
+**Fixed bugs:**
+
+- Various fixes to the formatter [\#288](https://github.com/serulian/compiler/pull/288) ([josephschorr](https://github.com/josephschorr))
+-  Fix scope checks for lambda return types and add a generator test [\#286](https://github.com/serulian/compiler/pull/286) ([josephschorr](https://github.com/josephschorr))
+- Anonymous function and SML fixes [\#284](https://github.com/serulian/compiler/pull/284) ([josephschorr](https://github.com/josephschorr))
+- Fix bug in generating flow expressions that marked them as async when they weren't [\#283](https://github.com/serulian/compiler/pull/283) ([josephschorr](https://github.com/josephschorr))
+- Fix panic in SRG if given a type path with more than 2 segments [\#275](https://github.com/serulian/compiler/pull/275) ([josephschorr](https://github.com/josephschorr))
+- Add extra checks on the `build` command to prevent building non-Serulian source [\#274](https://github.com/serulian/compiler/pull/274) ([josephschorr](https://github.com/josephschorr))
+
+**Closed issues:**
+
+- Anonymous function expression fails to compile [\#264](https://github.com/serulian/compiler/issues/264)
+
+**Merged pull requests:**
+
+- Enable support for casting streams [\#285](https://github.com/serulian/compiler/pull/285) ([josephschorr](https://github.com/josephschorr))
+- Fix toolkit for updates to downstream libraries [\#281](https://github.com/serulian/compiler/pull/281) ([josephschorr](https://github.com/josephschorr))
+- Major refactoring and addition of integration tooling [\#280](https://github.com/serulian/compiler/pull/280) ([josephschorr](https://github.com/josephschorr))
+- Output differences in source mapping tests using diff and fix golden file [\#279](https://github.com/serulian/compiler/pull/279) ([josephschorr](https://github.com/josephschorr))
+- Code cleanup in prep for better integration support [\#278](https://github.com/serulian/compiler/pull/278) ([josephschorr](https://github.com/josephschorr))
+
 ## [v0.2.0](https://github.com/serulian/compiler/tree/v0.2.0) (2017-12-09)
 [Full Changelog](https://github.com/serulian/compiler/compare/v0.1.0...v0.2.0)
 
