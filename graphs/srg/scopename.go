@@ -253,6 +253,9 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	case sourceshape.NodeTypeProperty:
 		return NamedScopeMember
 
+	case sourceshape.NodeTypeOperator:
+		return NamedScopeMember
+
 	/* Parameter */
 	case sourceshape.NodeTypeParameter:
 		return NamedScopeParameter
@@ -389,6 +392,9 @@ func (ns SRGNamedScope) Name() (string, bool) {
 
 	case sourceshape.NodeTypeFunction:
 		return ns.TryGet(sourceshape.NodePredicateTypeMemberName)
+
+	case sourceshape.NodeTypeOperator:
+		return ns.TryGet(sourceshape.NodeOperatorName)
 
 	case sourceshape.NodeTypeParameter:
 		return ns.TryGet(sourceshape.NodeParameterName)
