@@ -167,8 +167,8 @@ Loop:
 
 		default:
 			p.emitError("Unexpected token at root level: %v", p.currentToken.kind)
+			p.lex.lex.consumeRemainder()
 			break Loop
-
 		}
 
 		if p.isToken(tokenTypeEOF) {

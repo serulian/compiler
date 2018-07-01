@@ -201,7 +201,7 @@ func (g *TypeGraph) defineAllImplicitMembers(cancelationHandle compilerutil.Canc
 type decorateHandler func(decorator *MemberDecorator, generics map[string]TGGeneric)
 
 func (g *TypeGraph) defineOperator(typeDecl TGTypeDecl, operator operatorDefinition, handler decorateHandler) {
-	g.defineMemberInternal(typeDecl, operator.Name, []string{}, true, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+	g.defineMemberExpanded(typeDecl, operator.Name, []string{}, true, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
 		decorator.Static(operator.IsStatic)
 		decorator.ReadOnly(!operator.IsAssignable)
 		handler(decorator, generics)
@@ -209,11 +209,18 @@ func (g *TypeGraph) defineOperator(typeDecl TGTypeDecl, operator operatorDefinit
 }
 
 func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []string, handler decorateHandler) {
-	g.defineMemberInternal(typeDecl, name, generics, false, handler)
+	g.defineMemberExpanded(typeDecl, name, generics, false, handler)
 }
 
-func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, generics []string, isOperator bool, handler decorateHandler) {
+func (g *TypeGraph) defineMemberExpanded(typeDecl TGTypeDecl, name string, generics []string, isOperator bool, handler decorateHandler) {
+	member := g.defineMemberInternal(typeDecl, name, generics, isOperator)
+	g.decorateMemberInternal(typeDecl, member, name, generics, handler)
+}
+
+func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, generics []string, isOperator bool) TGMember {
 	modifier := g.layer.NewModifier()
+	defer modifier.Apply()
+
 	builder := &MemberBuilder{
 		tdg:        g,
 		modifier:   modifier,
@@ -225,8 +232,12 @@ func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, gener
 		builder.withGeneric(generic)
 	}
 
-	member := builder.Name(name).Define()
-	modifier.Apply()
+	return builder.Name(name).Define()
+}
+
+func (g *TypeGraph) decorateMemberInternal(typeDecl TGTypeDecl, member TGMember, name string, generics []string, handler decorateHandler) {
+	dmodifier := g.layer.NewModifier()
+	defer dmodifier.Apply()
 
 	genericMap := map[string]TGGeneric{}
 	memberGenerics := member.Generics()
@@ -234,7 +245,6 @@ func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, gener
 		genericMap[generic] = memberGenerics[index]
 	}
 
-	dmodifier := g.layer.NewModifier()
 	decorator := &MemberDecorator{
 		tdg:                g,
 		modifier:           dmodifier,
@@ -245,7 +255,6 @@ func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, gener
 	}
 
 	handler(decorator, genericMap)
-	dmodifier.Apply()
 }
 
 // defineImplicitMembers defines the implicit members (new() constructor, etc) on a type.

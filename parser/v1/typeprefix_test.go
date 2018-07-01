@@ -5,8 +5,10 @@
 package parser
 
 import (
+	"runtime"
 	"testing"
 
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,6 +60,7 @@ var typePrefixTests = []typePrefixTest{
 func TestIsTypePrefix(t *testing.T) {
 	for _, test := range typePrefixTests {
 		t.Run(test.snippet, func(t *testing.T) {
+			defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
 			assert.Equal(t, test.isPrefix, IsTypePrefix(test.snippet))
 		})
 	}

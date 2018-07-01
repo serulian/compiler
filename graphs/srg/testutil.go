@@ -74,6 +74,9 @@ func (t testTypePackageLoaderParser) Apply(packageMap packageloader.LoadedPackag
 
 }
 
+func (t testTypePackageLoaderParser) Cancel() {
+}
+
 func (t testTypePackageLoaderParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 
 }

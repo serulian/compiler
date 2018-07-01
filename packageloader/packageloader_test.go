@@ -49,6 +49,9 @@ type testParser struct {
 	tt *testTracker
 }
 
+func (tt *testParser) Cancel() {
+}
+
 func (tt *testParser) Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 
 }

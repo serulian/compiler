@@ -7,10 +7,12 @@ package scopegraph
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
@@ -1648,6 +1650,8 @@ var scopeGraphTests = []scopegraphTest{
 }
 
 func TestGraphs(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	for _, test := range scopeGraphTests {
 		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
 			continue
@@ -1717,6 +1721,8 @@ func TestGraphs(t *testing.T) {
 }
 
 func TestBuildFilteredScope(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	entrypointFile := "tests/basic/basic.seru"
 	result, _ := ParseAndBuildScopeGraphWithConfig(Config{
 		Entrypoint:                packageloader.Entrypoint(entrypointFile),
@@ -1762,6 +1768,8 @@ var transientScopeTests = []transientScopeTest{
 }
 
 func TestBuildTransientScope(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	entrypointFile := "tests/transient/transient.seru"
 	result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 	if !assert.True(t, result.Status, "Expected success in transient scope test") {
@@ -1799,6 +1807,8 @@ func TestBuildTransientScope(t *testing.T) {
 }
 
 func TestBuildWithInvalidTypeGraph(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	// Load the file without a corelib, which should fail.
 	entrypointFile := "tests/transient/transient.seru"
 	_, err := ParseAndBuildScopeGraph(entrypointFile, []string{})

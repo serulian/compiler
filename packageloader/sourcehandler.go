@@ -42,6 +42,9 @@ type SourceHandlerParser interface {
 	// Verify performs verification of the loaded source. Any errors or warnings encountered
 	// should be reported via the given reporter callbacks.
 	Verify(errorReporter ErrorReporter, warningReporter WarningReporter, cancelationHandle compilerutil.CancelationHandle)
+
+	// Cancel is called to cancel the parsing operation.
+	Cancel()
 }
 
 // PackageImportType identifies the types of imports.

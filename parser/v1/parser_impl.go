@@ -68,6 +68,9 @@ func parseExpression(builder shared.NodeBuilder, importReporter packageloader.Im
 	p := buildParser(builder, importReporter, source, startIndex, input)
 	p.consumeToken()
 	node, ok := p.tryConsumeExpression(consumeExpressionNoBraces)
+	if p.currentToken.kind != tokenTypeEOF {
+		p.lex.lex.consumeRemainder()
+	}
 	return node, p.previousToken, p, ok
 }
 

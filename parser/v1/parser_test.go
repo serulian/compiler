@@ -9,12 +9,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
@@ -328,6 +330,8 @@ func reportImport(sourceKind string, importPath string, importType packageloader
 }
 
 func TestParser(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	for _, test := range parserTests {
 		if os.Getenv("FILTER") != "" {
 			if !strings.Contains(test.name, os.Getenv("FILTER")) {
@@ -422,6 +426,8 @@ var parseExpressionTests = []parseExpressionTest{
 }
 
 func TestParseExpression(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	for index, test := range parseExpressionTests {
 		parsed, ok := ParseExpression(createAstNode, compilercommon.InputSource(test.expressionString), index+10, test.expressionString)
 		if !assert.Equal(t, test.isOkay, ok, "Mismatch in success expected for parsing test: %s", test.expressionString) {

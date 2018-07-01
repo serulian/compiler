@@ -58,6 +58,10 @@ func (sh srgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap
 	sh.modifier.ApplyOrClose(!cancelationHandle.WasCanceled())
 }
 
+func (sh srgSourceHandlerParser) Cancel() {
+	sh.modifier.Close()
+}
+
 func (sh srgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 	g := sh.srg
 
