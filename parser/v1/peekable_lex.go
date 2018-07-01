@@ -24,6 +24,10 @@ func peekable_lex(lex *lexer) *peekableLexer {
 	}
 }
 
+func (l *peekableLexer) terminate() {
+	l.lex.errorf("End of the line")
+}
+
 // nextToken returns the next token found in the lexer.
 func (l *peekableLexer) nextToken() lexeme {
 	frontElement := l.readTokens.Front()

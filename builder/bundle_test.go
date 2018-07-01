@@ -69,6 +69,9 @@ func (t testParser) Parse(source compilercommon.InputSource, input string, impor
 	t.files[string(source)] = input
 }
 
+func (t testParser) Cancel() {
+}
+
 func (t testParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker, cancelationHandle compilerutil.CancelationHandle) {
 }
 

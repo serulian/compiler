@@ -168,6 +168,7 @@ func (g *Groker) BuildHandle() chan HandleResult {
 
 		scopeResult := result.scopeResult
 		if scopeResult.Graph == nil {
+			resultChan <- HandleResult{Handle{}, result.err}
 			return
 		}
 

@@ -48,6 +48,7 @@ func checkForTypePrefix(input string, callers ...consumeCaller) bool {
 	for _, caller := range callers {
 		p := buildParser(typePrefixAstNodeBuilder, noopReportImport, compilercommon.InputSource(""), bytePosition(0), input+"sentinal")
 		rootNode := caller(p)
+		p.lex.lex.consumeRemainder()
 		if rootNode.hasSentinaledTypeReference() {
 			return true
 		}

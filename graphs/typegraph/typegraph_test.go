@@ -6,6 +6,7 @@ package typegraph
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -19,6 +20,8 @@ import (
 var _ = fmt.Printf
 
 func TestCancelation(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	handle := compilerutil.NewCancelationHandle()
 	handle.Cancel()
 
@@ -29,6 +32,8 @@ func TestCancelation(t *testing.T) {
 }
 
 func TestModules(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	graph := ConstructTypeGraphWithBasicTypes(
 		TestModule{"first",
 			[]TestType{},

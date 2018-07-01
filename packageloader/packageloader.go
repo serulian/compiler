@@ -176,6 +176,10 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// If canceled, return immediately.
 	if p.cancelationHandle.WasCanceled() {
+		for _, parser := range p.parsers {
+			parser.Cancel()
+		}
+
 		return LoadResult{
 			Status:   false,
 			Errors:   make([]compilercommon.SourceError, 0),

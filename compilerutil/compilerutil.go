@@ -8,9 +8,15 @@ package compilerutil
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
+	"time"
 
-	"github.com/nu7hatch/gouuid"
+	"testing"
+
+	uuid "github.com/nu7hatch/gouuid"
+
+	"github.com/stretchr/testify/require"
 )
 
 type checkFn func() bool
@@ -51,4 +57,13 @@ func NewUniqueId() string {
 	}
 
 	return u4.String()
+}
+
+// DetectGoroutineLeak detects if there is a leak of goroutines over the life of a test.
+func DetectGoroutineLeak(t *testing.T, grCount int) {
+	runtime.GC()
+	time.Sleep(1 * time.Millisecond)
+	buf := make([]byte, 1<<20)
+	runtime.Stack(buf, true)
+	require.Equal(t, grCount, runtime.NumGoroutine(), "wrong number of goroutines:\n%s", string(buf))
 }

@@ -6,11 +6,13 @@ package grok
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 )
 
@@ -233,6 +235,8 @@ var grokCompletionTests = []grokCompletionTest{
 }
 
 func TestGrokCompletion(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	for _, grokCompletionTest := range grokCompletionTests {
 		testSourcePath := "tests/" + grokCompletionTest.name + "/" + grokCompletionTest.name + ".seru"
 		groker := NewGrokerWithConfig(Config{

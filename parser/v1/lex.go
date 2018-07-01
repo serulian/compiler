@@ -287,6 +287,18 @@ func (l *lexer) peekForward(count int) rune {
 	return r
 }
 
+// consumeRemainder consumes the remainder of the token stream.
+func (l *lexer) consumeRemainder() {
+
+	for {
+		if l.currentToken.kind == tokenTypeEOF || l.currentToken.kind == tokenTypeError {
+			break
+		}
+
+		l.nextToken()
+	}
+}
+
 // peekValue looks forward for the given value string. If found, returns true.
 func (l *lexer) peekValue(value string) bool {
 	for index, runeValue := range value {
@@ -332,7 +344,9 @@ func (l *lexer) emit(t tokenType) {
 // errorf returns an error token and terminates the scan by passing
 // back a nil pointer that will be the next state, terminating l.nexttoken.
 func (l *lexer) errorf(format string, args ...interface{}) stateFn {
-	l.tokens <- lexeme{tokenTypeError, l.start, fmt.Sprintf(format, args...)}
+	currentToken := lexeme{tokenTypeError, l.start, fmt.Sprintf(format, args...)}
+	l.tokens <- currentToken
+	l.currentToken = currentToken
 	return nil
 }
 

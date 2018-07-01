@@ -7,11 +7,13 @@ package scopegraph
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/sourceshape"
@@ -229,6 +231,8 @@ var promisingLabelTests = []promisingLabelTest{
 }
 
 func TestPromisingLabels(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	for _, test := range promisingLabelTests {
 		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
 			continue

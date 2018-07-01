@@ -7,10 +7,12 @@
 package parser
 
 import (
+	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 )
 
 type lexerTest struct {
@@ -261,9 +263,15 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeEllipsis, 0, ".."},
 		lexeme{tokenTypeNumericLiteral, 0, "3.6"},
 		tEOF}},
+
+	{"invalid suffix test", "adj $", []lexeme{lexeme{tokenTypeIdentifer, 0, "adj"},
+		lexeme{tokenTypeWhitespace, 3, " "},
+		lexeme{tokenTypeError, 4, "unrecognized character at this location: U+0024 '$'"}}},
 }
 
 func TestLexer(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	for _, test := range lexerTests {
 		tokens := collect(&test)
 		if !equal(tokens, test.tokens, false) {
@@ -273,6 +281,8 @@ func TestLexer(t *testing.T) {
 }
 
 func TestLexerPositioning(t *testing.T) {
+	defer compilerutil.DetectGoroutineLeak(t, runtime.NumGoroutine())
+
 	text := `this.foo // some comment
 class SomeClass`
 

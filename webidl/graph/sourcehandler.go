@@ -60,6 +60,10 @@ func (sh irgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap
 	sh.irg.typeCollapser = createTypeCollapser(sh.irg, modifier)
 }
 
+func (sh irgSourceHandlerParser) Cancel() {
+	sh.modifier.Close()
+}
+
 func (sh irgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter, cancelationHandle compilerutil.CancelationHandle) {
 	g := sh.irg
 
