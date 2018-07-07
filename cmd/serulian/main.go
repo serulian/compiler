@@ -404,8 +404,11 @@ func main() {
 	rootCmd.AddCommand(cmdFormat)
 	rootCmd.AddCommand(cmdImports)
 	rootCmd.AddCommand(cmdPackage)
-	rootCmd.AddCommand(cmdIntegrations)
+
+	// TODO: re-add if/when Golang plugin system is fixed.
+	//rootCmd.AddCommand(cmdIntegrations)
 	rootCmd.AddCommand(cmdVersion)
+
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
 	rootCmd.PersistentFlags().BoolVar(&profile, "profile", false, "If set to true, Serulian will be profiled")
 	rootCmd.Execute()
