@@ -6,15 +6,10 @@ package integration
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
-	"plugin"
-	"strings"
-
-	"github.com/phayes/permbits"
+	//"plugin"
 )
 
 // integrationSuffix is the suffix for all integrations.
@@ -49,7 +44,18 @@ func LoadIntegrations() ([]Integration, error) {
 }
 
 func loadIntegrationsUnderPath(dirPath string) ([]IntegrationInformation, error) {
-	_, err := os.Stat(dirPath)
+	return []IntegrationInformation{}, nil
+}
+
+func loadIntegrationAtPath(fullPath string) (IntegrationInformation, error) {
+	return IntegrationInformation{}, fmt.Errorf("Currently unsupported")
+}
+
+// NOTE: Golang plugin system is *still* broken on Darwin and using it results in a lack of
+// proper debug symbols in the binary. Disable until such time as it is first or we have a better
+// solution.
+
+/*_, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
 		return []IntegrationInformation{}, nil
 	}
@@ -109,3 +115,4 @@ func loadIntegrationAtPath(fullPath string) (IntegrationInformation, error) {
 
 	return IntegrationInformation{fullPath, integration}, nil
 }
+*/
