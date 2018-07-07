@@ -203,6 +203,7 @@ var wrappedAccessChildKinds = []sourceshape.NodeType{
 	sourceshape.NodeBinaryDivideExpression,
 	sourceshape.NodeBinaryModuloExpression,
 	sourceshape.NodeKeywordNotExpression,
+	sourceshape.NodeNullComparisonExpression,
 }
 
 // emitAccessExpression emits an access expression.

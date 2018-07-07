@@ -81,4 +81,5 @@ function SomeFunction() {
 			NestedField: 'hello!',
 		},
 	}
+	(this.state.something ?? []foo{}).Stream()
 }
