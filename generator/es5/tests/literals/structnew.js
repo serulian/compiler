@@ -23,7 +23,7 @@ $module('structnew', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "AnotherField|3|71258460": true,
+        "AnotherField|3|0e92a8bc": true,
       };
       return this.$cachedtypesig = computed;
     };

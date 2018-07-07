@@ -31,7 +31,7 @@ class Tuple<T, Q> {
 	var First T? = null
 	var Second Q? = null
 
-	constructor Build(first T, second Q) {
+	constructor Build(first T?, second Q?) {
 		var tuple = Tuple<T, Q>.new()
 		tuple.First = first
 		tuple.Second = second
@@ -63,6 +63,30 @@ type Mapping<T> : Object {
 	}
 }
 
+/**
+ * sliceStream defines a stream over the contents of a slice.
+ */
+class sliceStream<I> {
+	var slice Slice<I>
+	var index int = 0
+
+	/**
+	 * forStream returns a new sliceStream over the items in the given `slice`.
+	 */
+	constructor forStream(slice Slice<I>) {
+		return sliceStream<I>{slice: slice}
+	}
+
+	function Next() Tuple<I, bool> {
+		if this.index >= this.slice.Length {
+			return Tuple<I, bool>.Build(null, false)
+		}
+
+		this.index = this.index + 1
+		return Tuple<I, bool>.Build(this.slice[this.index - 1], true)
+	}
+}
+
 @•typealias('slice')
 type Slice<T> : Array {
 	constructor Empty() { return Slice<T>(Array.new()) }
@@ -73,6 +97,10 @@ type Slice<T> : Array {
 
 	operator Index(index int) T {
 		return Array(this)[Number(index)].(T)
+	}
+
+	function Stream() T* {
+		return sliceStream<T>.forStream(this)
 	}
 
 	operator Slice(startindex int?, endindex int?) Slice<T> {

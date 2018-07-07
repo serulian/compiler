@@ -47,8 +47,8 @@ $module('arrow', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Then|2|fb1385bf<414fa52a<71258460>>": true,
-        "Catch|2|fb1385bf<414fa52a<71258460>>": true,
+        "Then|2|6caba86c<12e364e4<0e92a8bc>>": true,
+        "Catch|2|6caba86c<12e364e4<0e92a8bc>>": true,
       };
       return this.$cachedtypesig = computed;
     };

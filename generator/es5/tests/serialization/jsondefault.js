@@ -28,12 +28,12 @@ $module('jsondefault', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|fb1385bf<d610e0b2>": true,
-        "equals|4|fb1385bf<71258460>": true,
-        "Stringify|2|fb1385bf<b2b53db7>": true,
-        "Mapping|2|fb1385bf<204295f9<any>>": true,
-        "Clone|2|fb1385bf<d610e0b2>": true,
-        "String|2|fb1385bf<b2b53db7>": true,
+        "Parse|1|6caba86c<d610e0b2>": true,
+        "equals|4|6caba86c<0e92a8bc>": true,
+        "Stringify|2|6caba86c<e38ac9b0>": true,
+        "Mapping|2|6caba86c<c518fe3b<any>>": true,
+        "Clone|2|6caba86c<d610e0b2>": true,
+        "String|2|6caba86c<e38ac9b0>": true,
       };
       return this.$cachedtypesig = computed;
     };

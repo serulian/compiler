@@ -16,7 +16,7 @@ $module('loopstreamable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Stream|2|fb1385bf<ba03a392<71258460>>": true,
+        "Stream|2|6caba86c<d56f59a8<0e92a8bc>>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -42,7 +42,7 @@ $module('loopstreamable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Next|2|fb1385bf<8abdfedc<71258460,71258460>>": true,
+        "Next|2|6caba86c<8abdfedc<0e92a8bc,0e92a8bc>>": true,
       };
       return this.$cachedtypesig = computed;
     };
