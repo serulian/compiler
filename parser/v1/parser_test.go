@@ -323,6 +323,9 @@ var parserTests = []parserTest{
 	{"partial type member test", "partial/typemember"},
 	{"partial type member test 2", "partial/typemember2"},
 	{"partial type ref test", "partial/typeref"},
+
+	// Weird character.
+	{"weird character test", "weird/character"},
 }
 
 func reportImport(sourceKind string, importPath string, importType packageloader.PackageImportType, importSource compilercommon.InputSource, runePosition int) string {
