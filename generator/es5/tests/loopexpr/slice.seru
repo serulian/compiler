@@ -1,0 +1,9 @@
+function TEST() any {
+	var s = s + 1 for s in []int{1, 2, 3}
+	var counter = 0
+	for entry in s {
+		counter = counter + entry
+	}
+
+	return counter == 9
+}
