@@ -380,7 +380,11 @@ func (p *sourceParser) consumeIdentifier() (string, bool) {
 func (p *sourceParser) consume(types ...tokenType) (lexeme, bool) {
 	token, ok := p.tryConsume(types...)
 	if !ok {
-		p.emitError("Expected one of: %v, found: %v", types, p.currentToken.kind)
+		if p.currentToken.kind == tokenTypeError && p.currentToken.value != "" {
+			p.emitError("Expected one of: %v, but %v", types, p.currentToken.value)
+		} else {
+			p.emitError("Expected one of: %v, found: %v", types, p.currentToken.kind)
+		}
 
 		// Consume tokens to get back into a "good" state via the error productions. Error
 		// productions will determine how many "bad" tokens to consume until we can continue.
@@ -415,7 +419,7 @@ func (p *sourceParser) tryConsumeWithComments(types ...tokenType) (commentedLexe
 		return token, true
 	}
 
-	return commentedLexeme{lexeme{tokenTypeError, -1, ""}, make([]lexeme, 0)}, false
+	return commentedLexeme{lexeme{tokenTypeError, -1, fmt.Sprintf("Expected one of: %v, found: %v", types, p.currentToken.value)}, make([]lexeme, 0)}, false
 }
 
 // isStatementTerminator returns whether the current token is a statement terminator

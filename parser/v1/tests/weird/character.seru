@@ -1,0 +1,4 @@
+function DoSomething() {
+	SomeFunction(this, something{someProp: output })
+	return
+}
