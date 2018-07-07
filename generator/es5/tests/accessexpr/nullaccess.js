@@ -16,7 +16,7 @@ $module('nullaccess', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeBool|3|71258460": true,
+        "SomeBool|3|0e92a8bc": true,
       };
       return this.$cachedtypesig = computed;
     };

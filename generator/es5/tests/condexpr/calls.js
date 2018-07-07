@@ -16,7 +16,7 @@ $module('calls', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Message|3|b2b53db7": true,
+        "Message|3|e38ac9b0": true,
       };
       return this.$cachedtypesig = computed;
     };

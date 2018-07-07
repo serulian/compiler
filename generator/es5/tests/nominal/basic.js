@@ -16,7 +16,7 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "DoSomething|2|fb1385bf<71258460>": true,
+        "DoSomething|2|6caba86c<0e92a8bc>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -46,8 +46,8 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "AnotherThing|2|fb1385bf<71258460>": true,
-        "SomeProp|3|71258460": true,
+        "AnotherThing|2|6caba86c<0e92a8bc>": true,
+        "SomeProp|3|0e92a8bc": true,
       };
       return this.$cachedtypesig = computed;
     };

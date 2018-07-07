@@ -43,7 +43,7 @@ $module('asyncfunctioncallnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeMethod|2|fb1385bf<71258460>": true,
+        "SomeMethod|2|6caba86c<0e92a8bc>": true,
       };
       return this.$cachedtypesig = computed;
     };

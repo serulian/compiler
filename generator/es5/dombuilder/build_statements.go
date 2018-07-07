@@ -128,7 +128,7 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 	db.continueStatementMap[node.NodeId] = startStatement
 	db.breakStatementMap[node.NodeId] = finalStatement
 
-	// A loop statement is buildd as a start statement which conditionally jumps to either the loop body
+	// A loop statement is built as a start statement which conditionally jumps to either the loop body
 	// (on true) or, on false, jumps to a final state after the loop.
 	if loopExpr, hasLoopExpr := db.tryGetExpression(node, sourceshape.NodeLoopStatementExpression); hasLoopExpr {
 		// Check for a named value under the loop. If found, this is a loop over a stream or streamable.

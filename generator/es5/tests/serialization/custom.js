@@ -23,9 +23,9 @@ $module('custom', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Get|1|fb1385bf<38a26367>": true,
-        "Stringify|2|fb1385bf<b2b53db7>": true,
-        "Parse|2|fb1385bf<204295f9<any>>": true,
+        "Get|1|6caba86c<38a26367>": true,
+        "Stringify|2|6caba86c<e38ac9b0>": true,
+        "Parse|2|6caba86c<c518fe3b<any>>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -53,12 +53,12 @@ $module('custom', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|fb1385bf<ba519ef3>": true,
-        "equals|4|fb1385bf<71258460>": true,
-        "Stringify|2|fb1385bf<b2b53db7>": true,
-        "Mapping|2|fb1385bf<204295f9<any>>": true,
-        "Clone|2|fb1385bf<ba519ef3>": true,
-        "String|2|fb1385bf<b2b53db7>": true,
+        "Parse|1|6caba86c<ba519ef3>": true,
+        "equals|4|6caba86c<0e92a8bc>": true,
+        "Stringify|2|6caba86c<e38ac9b0>": true,
+        "Mapping|2|6caba86c<c518fe3b<any>>": true,
+        "Clone|2|6caba86c<ba519ef3>": true,
+        "String|2|6caba86c<e38ac9b0>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -98,12 +98,12 @@ $module('custom', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|fb1385bf<be88a8fa>": true,
-        "equals|4|fb1385bf<71258460>": true,
-        "Stringify|2|fb1385bf<b2b53db7>": true,
-        "Mapping|2|fb1385bf<204295f9<any>>": true,
-        "Clone|2|fb1385bf<be88a8fa>": true,
-        "String|2|fb1385bf<b2b53db7>": true,
+        "Parse|1|6caba86c<be88a8fa>": true,
+        "equals|4|6caba86c<0e92a8bc>": true,
+        "Stringify|2|6caba86c<e38ac9b0>": true,
+        "Mapping|2|6caba86c<c518fe3b<any>>": true,
+        "Clone|2|6caba86c<be88a8fa>": true,
+        "String|2|6caba86c<e38ac9b0>": true,
       };
       return this.$cachedtypesig = computed;
     };
