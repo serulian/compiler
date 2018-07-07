@@ -7,6 +7,7 @@
 package grok
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -168,7 +169,7 @@ func (g *Groker) BuildHandle() chan HandleResult {
 
 		scopeResult := result.scopeResult
 		if scopeResult.Graph == nil {
-			resultChan <- HandleResult{Handle{}, result.err}
+			resultChan <- HandleResult{Handle{}, fmt.Errorf("Handle construction was canceled")}
 			return
 		}
 
