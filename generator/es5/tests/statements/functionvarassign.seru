@@ -1,0 +1,17 @@
+class SomeClass {
+	var someFunction function<int>()
+
+	constructor Default() {
+		return SomeClass{someFunction: function() { return 41 }}
+	}
+
+	function withFunction(f function<int>()) {
+		this.someFunction = f
+	}
+}
+
+function TEST() any {
+	sc := SomeClass.Default()
+	sc.withFunction(function() int { return 42 })
+	return sc.someFunction() == 42
+}

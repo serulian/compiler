@@ -58,8 +58,9 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 			if isAliasedFunctionReference {
 				_, underFuncCall := node.TryGetIncomingNode(sourceshape.NodeFunctionCallExpressionChildExpr)
 				_, underSmlCall := node.TryGetIncomingNode(sourceshape.NodeSmlExpressionTypeOrFunction)
+				_, underAssignment := node.TryGetIncomingNode(sourceshape.NodeAssignStatementName)
 
-				if !underFuncCall && !underSmlCall {
+				if !underFuncCall && !underSmlCall && !underAssignment {
 					isPromising := db.scopegraph.IsPromisingMember(memberRef, scopegraph.PromisingAccessImplicitGet)
 					return codedom.DynamicAccess(childExpr, memberRef.Name(), isPromising, node)
 				}

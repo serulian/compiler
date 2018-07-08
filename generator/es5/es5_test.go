@@ -140,6 +140,7 @@ var generationTests = []generationTest{
 	generationTest{"break statement", "statements", "break", integrationTestNone, ""},
 	generationTest{"var and assign statements", "statements", "varassign", integrationTestNone, ""},
 	generationTest{"var no init statement", "statements", "varnoinit", integrationTestNone, ""},
+	generationTest{"function var assign statement", "statements", "functionvarassign", integrationTestNone, ""},
 	generationTest{"switch no expr statement", "statements", "switchnoexpr", integrationTestNone, ""},
 	generationTest{"switch expr statement", "statements", "switchexpr", integrationTestNone, ""},
 	generationTest{"with statement", "statements", "with", integrationTestSuccessExpected, ""},
