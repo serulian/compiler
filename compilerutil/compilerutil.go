@@ -63,6 +63,10 @@ func NewUniqueId() string {
 func DetectGoroutineLeak(t *testing.T, grCount int) {
 	runtime.GC()
 	time.Sleep(1 * time.Millisecond)
+	if runtime.NumGoroutine() != grCount {
+		time.Sleep(10 * time.Millisecond) // To be sure
+	}
+
 	buf := make([]byte, 1<<20)
 	runtime.Stack(buf, true)
 	require.Equal(t, grCount, runtime.NumGoroutine(), "wrong number of goroutines:\n%s", string(buf))
