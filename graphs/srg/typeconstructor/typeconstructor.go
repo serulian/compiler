@@ -125,7 +125,12 @@ func (stc *srgTypeConstructor) DefineDependencies(annotator typegraph.Annotator,
 
 		// Decorate all types with their inheritance or composition.
 		if srgType.TypeKind() == srg.NominalType {
-			wrappedType, _ := srgType.WrappedType()
+			wrappedType, ok := srgType.WrappedType()
+			if !ok {
+				annotator.ReportError(srgType.Node(), "Missing parent type for nominal type definition")
+				continue
+			}
+
 			resolvedType, err := stc.BuildTypeRef(wrappedType, graph)
 			if err != nil {
 				annotator.ReportError(srgType.Node(), "%s", err.Error())
@@ -150,7 +155,12 @@ func (stc *srgTypeConstructor) DefineDependencies(annotator typegraph.Annotator,
 
 		// Decorate agents with their principal type.
 		if srgType.TypeKind() == srg.AgentType {
-			principalType, _ := srgType.PrincipalType()
+			principalType, ok := srgType.PrincipalType()
+			if !ok {
+				annotator.ReportError(srgType.Node(), "Missing principal type for agent type definition")
+				continue
+			}
+
 			resolvedType, err := stc.BuildTypeRef(principalType, graph)
 			if err != nil {
 				annotator.ReportError(srgType.Node(), "%s", err.Error())

@@ -176,7 +176,13 @@ func (t SRGType) FindMember(name string) (SRGMember, bool) {
 // return a valid reference for AgentTypes.
 func (t SRGType) PrincipalType() (SRGTypeRef, bool) {
 	if t.TypeKind() == AgentType {
-		return SRGTypeRef{t.GraphNode.GetNode(sourceshape.NodeAgentPredicatePrincipalType), t.srg}, true
+		principalType, ok := t.GraphNode.TryGetNode(sourceshape.NodeAgentPredicatePrincipalType)
+		if !ok {
+			// Partial graph.
+			return SRGTypeRef{}, false
+		}
+
+		return SRGTypeRef{principalType, t.srg}, true
 	}
 
 	return SRGTypeRef{}, false
@@ -186,7 +192,13 @@ func (t SRGType) PrincipalType() (SRGTypeRef, bool) {
 // return a valid reference for NominalTypes.
 func (t SRGType) WrappedType() (SRGTypeRef, bool) {
 	if t.TypeKind() == NominalType {
-		return SRGTypeRef{t.GraphNode.GetNode(sourceshape.NodeNominalPredicateBaseType), t.srg}, true
+		baseType, ok := t.GraphNode.TryGetNode(sourceshape.NodeNominalPredicateBaseType)
+		if !ok {
+			// Partial graph.
+			return SRGTypeRef{}, false
+		}
+
+		return SRGTypeRef{baseType, t.srg}, true
 	}
 
 	return SRGTypeRef{}, false
