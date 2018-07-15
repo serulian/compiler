@@ -54,7 +54,7 @@ func (sb *scopeBuilder) processSRGNameOrInfo(srgInfo srg.SRGScopeOrImport) (name
 	packageImportInfo := srgInfo.AsPackageImport()
 	typeOrMember, found := sb.sg.tdg.ResolveTypeOrMemberUnderPackage(packageImportInfo.ImportedName(), packageImportInfo.Package())
 	if !found {
-		return namedScopeInfo{}, fmt.Errorf("Could not find type or member '%v' under package %v", packageImportInfo.ImportedName(), packageImportInfo.Package())
+		return namedScopeInfo{}, fmt.Errorf("Could not find type or member '%v' under package %v", packageImportInfo.ImportedName(), packageImportInfo.Package().ReferenceID())
 	}
 
 	return namedScopeInfo{srg.SRGNamedScope{}, typeOrMember, sb}, nil
