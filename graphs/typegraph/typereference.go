@@ -215,7 +215,11 @@ func (tr TypeReference) CheckNominalConvertable(other TypeReference) error {
 func (tr TypeReference) NominalDataType() TypeReference {
 	root := tr.NominalRootType()
 	if root.IsNominal() {
-		return root.ReferredType().ParentTypes()[0].TransformUnder(tr)
+		dataType := root.ReferredType().ParentTypes()[0].TransformUnder(tr)
+		if root.IsNullable() {
+			dataType = dataType.AsNullable()
+		}
+		return dataType
 	}
 
 	return root
@@ -238,6 +242,10 @@ func (tr TypeReference) NominalRootType() TypeReference {
 		current = current.ReferredType().ParentTypes()[0].TransformUnder(tr)
 
 		if !current.IsNominal() {
+			if tr.IsNullable() {
+				child = child.AsNullable()
+			}
+
 			return child
 		}
 	}

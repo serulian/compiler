@@ -624,6 +624,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"root type op success test", "rootop", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"someclass", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"someclass2", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 			expectedScopeEntry{"generic", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
 			expectedScopeEntry{"interface", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
 		},

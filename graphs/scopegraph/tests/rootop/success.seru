@@ -4,8 +4,11 @@ interface SomeInterface {}
 
 type SomeType : SomeClass {}
 
-function DoSomething<T>(st SomeType, si SomeInterface, t T) {
+type AnotherType : SomeType {}
+
+function DoSomething<T>(st SomeType, si SomeInterface, at AnotherType, t T) {
 	/* someclass */(&st)
 	/* generic */(&t)
+	/* someclass2 */(&at)
 	/* interface */(&si)
 }

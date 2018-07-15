@@ -1581,3 +1581,77 @@ func TestCasting(t *testing.T) {
 		}
 	}
 }
+
+type nominalTest struct {
+	currentType      string
+	expectedRootType string
+	expectedDataType string
+}
+
+func TestNominalOperations(t *testing.T) {
+	testModule := TestModule{
+		"nominal",
+		[]TestType{
+			// struct SomeStruct {}
+			TestType{"struct", "SomeStruct", "", []TestGeneric{},
+				[]TestMember{},
+			},
+
+			// class SomeClass {
+			// 	 function<bool> DoSomething()
+			// }
+			TestType{"class", "SomeClass", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
+				},
+			},
+
+			// type StructuralNominal : SomeStruct {}
+			TestType{"nominal", "StructuralNominal", "SomeStruct",
+				[]TestGeneric{},
+				[]TestMember{},
+			},
+
+			// type NonStructuralNominal : SomeClass {}
+			TestType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]TestGeneric{},
+				[]TestMember{},
+			},
+
+			// type NestedNominal : StructuralNominal {}
+			TestType{"nominal", "NestedNominal", "StructuralNominal",
+				[]TestGeneric{},
+				[]TestMember{},
+			},
+		},
+		[]TestMember{},
+	}
+
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
+
+	nominalTests := []nominalTest{
+		nominalTest{"SomeStruct", "SomeStruct", "SomeStruct"},
+		nominalTest{"SomeStruct?", "SomeStruct?", "SomeStruct?"},
+
+		nominalTest{"SomeClass", "SomeClass", "SomeClass"},
+		nominalTest{"SomeClass?", "SomeClass?", "SomeClass?"},
+
+		nominalTest{"StructuralNominal", "StructuralNominal", "SomeStruct"},
+		nominalTest{"StructuralNominal?", "StructuralNominal?", "SomeStruct?"},
+
+		nominalTest{"NonStructuralNominal", "NonStructuralNominal", "SomeClass"},
+		nominalTest{"NonStructuralNominal?", "NonStructuralNominal?", "SomeClass?"},
+
+		nominalTest{"NestedNominal", "StructuralNominal", "SomeStruct"},
+		nominalTest{"NestedNominal?", "StructuralNominal?", "SomeStruct?"},
+	}
+
+	for _, nt := range nominalTests {
+		t.Run(nt.currentType, func(t *testing.T) {
+			sourceRef := testModule.ResolveTypeString(nt.currentType, graph)
+			assert.Equal(t, nt.expectedDataType, sourceRef.NominalDataType().String())
+			assert.Equal(t, nt.expectedRootType, sourceRef.NominalRootType().String())
+		})
+	}
+}
