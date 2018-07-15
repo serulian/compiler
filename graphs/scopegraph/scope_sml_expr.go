@@ -174,6 +174,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 
 		// Scope and collect the types of all the children.
 		var childrenTypes = make([]typegraph.TypeReference, 0)
+		var childrenTypesValid = make([]bool, 0)
 		var childNodes = make([]compilergraph.GraphNode, 0)
 
 		cit := node.StartQuery().
@@ -188,6 +189,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 			}
 
 			childrenTypes = append(childrenTypes, childScope.ResolvedTypeRef(sb.sg.tdg))
+			childrenTypesValid = append(childrenTypesValid, childScope.GetIsValid())
 			childNodes = append(childNodes, childNode)
 		}
 
@@ -207,6 +209,11 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 
 				// Ensure the child types match.
 				for index, childType := range childrenTypes {
+					if !childrenTypesValid[index] {
+						// Skip
+						continue
+					}
+
 					// If the child has the type of the stream, then its allowed. Otherwise, the child must represent a single
 					// item *in* the stream.
 					if childType == childsType {
@@ -253,7 +260,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		for index, parameter := range parameters[2:] {
 			if !parameter.NullValueAllowed() {
 				sb.decorateWithError(node, "Declarable function used in an SML declaration tag cannot have a required parameter at position #%v. Found: %s", index+3, parameter)
-				return newScope().Invalid().GetScope()
+				return newScope().Invalid().Resolving(resolvedType).GetScope()
 			}
 		}
 	}
