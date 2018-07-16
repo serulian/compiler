@@ -1,5 +1,27 @@
 # Change Log
 
+## [v0.3.1](https://github.com/serulian/compiler/tree/v0.3.1) (2018-07-15)
+[Full Changelog](https://github.com/serulian/compiler/compare/v0.3.0...v0.3.1)
+
+**Implemented enhancements:**
+
+- Have more descriptive parser errors when caused by a lexer error [\#296](https://github.com/serulian/compiler/pull/296) ([josephschorr](https://github.com/josephschorr))
+
+**Fixed bugs:**
+
+- Fix panic in Grok when user is typing nominal or agent definitions [\#299](https://github.com/serulian/compiler/pull/299) ([josephschorr](https://github.com/josephschorr))
+- Fix handling of nominal root operator to always return the \*root\* data type [\#298](https://github.com/serulian/compiler/pull/298) ([josephschorr](https://github.com/josephschorr))
+- Fix generation bug when assigning to function variables [\#297](https://github.com/serulian/compiler/pull/297) ([josephschorr](https://github.com/josephschorr))
+- Ensure that null comparison operators are wrapped under access expressions [\#295](https://github.com/serulian/compiler/pull/295) ([josephschorr](https://github.com/josephschorr))
+- Fix generator bug with Streamable's under loop expressions [\#294](https://github.com/serulian/compiler/pull/294) ([josephschorr](https://github.com/josephschorr))
+- Fix bug in Grok cancelation that made it appear a valid handle was being returned [\#293](https://github.com/serulian/compiler/pull/293) ([josephschorr](https://github.com/josephschorr))
+- Fix small bugs that lead to various goroutines never terminating [\#291](https://github.com/serulian/compiler/pull/291) ([josephschorr](https://github.com/josephschorr))
+
+**Merged pull requests:**
+
+- Some small improvements [\#300](https://github.com/serulian/compiler/pull/300) ([josephschorr](https://github.com/josephschorr))
+- Disable support for integrations until the Golang plugin system is fixed [\#292](https://github.com/serulian/compiler/pull/292) ([josephschorr](https://github.com/josephschorr))
+
 ## [v0.3.0](https://github.com/serulian/compiler/tree/v0.3.0) (2018-06-16)
 [Full Changelog](https://github.com/serulian/compiler/compare/v0.2.0...v0.3.0)
 
