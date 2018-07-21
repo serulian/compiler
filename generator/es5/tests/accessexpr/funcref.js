@@ -17,7 +17,7 @@ $module('funcref', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeFunction|2|6caba86c<0e92a8bc>": true,
+        "SomeFunction|2|cf412abd<aa28dc2d>": true,
       };
       return this.$cachedtypesig = computed;
     };

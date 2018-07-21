@@ -20,7 +20,7 @@ $module('loopvar', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Next|2|6caba86c<8abdfedc<0e92a8bc,0e92a8bc>>": true,
+        "Next|2|cf412abd<c3db1bc3<aa28dc2d,aa28dc2d>>": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -47,8 +47,8 @@ $module('await', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Then|2|6caba86c<12e364e4<0e92a8bc>>": true,
-        "Catch|2|6caba86c<12e364e4<0e92a8bc>>": true,
+        "Then|2|cf412abd<5e5c3ef0<aa28dc2d>>": true,
+        "Catch|2|cf412abd<5e5c3ef0<aa28dc2d>>": true,
       };
       return this.$cachedtypesig = computed;
     };

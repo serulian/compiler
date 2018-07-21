@@ -605,14 +605,7 @@ this.Serulian = (function ($global) {
       if (!prom.Then) {
         return prom;
       }
-      return {
-        then: function () {
-          return prom.Then.apply(prom, arguments);
-        },
-        catch: function () {
-          return prom.Catch.apply(prom, arguments);
-        },
-      };
+      return new Promise(prom.Then.bind(prom), prom.Catch.bind(prom));
     },
   };
   var moduleInits = [];
@@ -797,7 +790,7 @@ this.Serulian = (function ($global) {
   };
   $module('________testlib.basictypes', function () {
     var $static = this;
-    this.$class('8abdfedc', 'Tuple', true, 'tuple', function (T, Q) {
+    this.$class('c3db1bc3', 'Tuple', true, 'tuple', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -819,12 +812,12 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[((("Build|1|6caba86c<8abdfedc<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        computed[((("Build|1|cf412abd<c3db1bc3<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('4190a2b6', 'sliceStream', true, '', function (I) {
+    this.$class('de5e8709', 'sliceStream', true, '', function (I) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function (slice) {
@@ -869,12 +862,12 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[("Next|2|6caba86c<8abdfedc<" + $t.typeid(I)) + ",0e92a8bc>>"] = true;
+        computed[("Next|2|cf412abd<c3db1bc3<" + $t.typeid(I)) + ",aa28dc2d>>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('6caba86c', 'Function', true, 'function', function (T) {
+    this.$class('cf412abd', 'Function', true, 'function', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -887,7 +880,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$class('fba67c2f', 'IntStream', false, '$intstream', function () {
+    this.$class('3f925959', 'IntStream', false, '$intstream', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -939,14 +932,14 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "OverRange|1|6caba86c<fba67c2f>": true,
-          "Next|2|6caba86c<8abdfedc<7c302777,0e92a8bc>>": true,
+          "OverRange|1|cf412abd<3f925959>": true,
+          "Next|2|cf412abd<c3db1bc3<2e508ae6,aa28dc2d>>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('f9bbec5c', 'List', true, 'list', function (T) {
+    this.$class('35bffbe4', 'List', true, 'list', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1037,15 +1030,15 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Count|3|7c302777": true,
+          "Count|3|2e508ae6": true,
         };
-        computed[("index|4|6caba86c<" + $t.typeid(T)) + ">"] = true;
-        computed[("slice|4|6caba86c<0456e039<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|cf412abd<" + $t.typeid(T)) + ">"] = true;
+        computed[("slice|4|cf412abd<fc2d8214<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('d91e69a8', 'Map', true, 'map', function (T, Q) {
+    this.$class('6ebb2037', 'Map', true, 'map', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1149,16 +1142,16 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "setindex|4|6caba86c<void>": true,
+          "setindex|4|cf412abd<void>": true,
         };
-        computed[((("Empty|1|6caba86c<d91e69a8<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
-        computed[("Mapping|2|6caba86c<c518fe3b<" + $t.typeid(Q)) + ">>"] = true;
-        computed[("index|4|6caba86c<" + $t.typeid(Q)) + ">"] = true;
+        computed[((("Empty|1|cf412abd<6ebb2037<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        computed[("Mapping|2|cf412abd<899aec48<" + $t.typeid(Q)) + ">>"] = true;
+        computed[("index|4|cf412abd<" + $t.typeid(Q)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('30775cff', 'JSON', false, 'json', function () {
+    this.$class('2cd34bc6', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1181,41 +1174,28 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|6caba86c<30775cff>": true,
-          "Stringify|2|6caba86c<e38ac9b0>": true,
-          "Parse|2|6caba86c<c518fe3b<any>>": true,
+          "Get|1|cf412abd<2cd34bc6>": true,
+          "Stringify|2|cf412abd<cb470bcc>": true,
+          "Parse|2|cf412abd<899aec48<any>>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('f6129d1a', 'Stringable', false, 'stringable', function () {
+    this.$interface('2ba9796f', 'Stringable', false, 'stringable', function () {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|6caba86c<e38ac9b0>": true,
+          "String|2|cf412abd<cb470bcc>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('d56f59a8', 'Stream', true, 'stream', function (T) {
-      var $static = this;
-      this.$typesig = function () {
-        if (this.$cachedtypesig) {
-          return this.$cachedtypesig;
-        }
-        var computed = {
-        };
-        computed[("Next|2|6caba86c<8abdfedc<" + $t.typeid(T)) + ",0e92a8bc>>"] = true;
-        return this.$cachedtypesig = computed;
-      };
-    });
-
-    this.$interface('22546d91', 'Streamable', true, 'streamable', function (T) {
+    this.$interface('9079975f', 'Stream', true, 'stream', function (T) {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1223,25 +1203,12 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[("Stream|2|6caba86c<d56f59a8<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Next|2|cf412abd<c3db1bc3<" + $t.typeid(T)) + ",aa28dc2d>>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('c6651b7a', 'Error', false, 'error', function () {
-      var $static = this;
-      this.$typesig = function () {
-        if (this.$cachedtypesig) {
-          return this.$cachedtypesig;
-        }
-        var computed = {
-          "Message|3|e38ac9b0": true,
-        };
-        return this.$cachedtypesig = computed;
-      };
-    });
-
-    this.$interface('12e364e4', 'Awaitable', true, 'awaitable', function (T) {
+    this.$interface('390f8f8b', 'Streamable', true, 'streamable', function (T) {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1249,56 +1216,65 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[("Then|2|6caba86c<12e364e4<" + $t.typeid(T)) + ">>"] = true;
-        computed[("Catch|2|6caba86c<12e364e4<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Stream|2|cf412abd<9079975f<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('f22a98b6', 'Releasable', false, 'releasable', function () {
+    this.$interface('76df0e76', 'Error', false, 'error', function () {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Release|2|6caba86c<void>": true,
+          "Message|3|cb470bcc": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('84266f58', 'Mappable', false, 'mappable', function () {
+    this.$interface('5e5c3ef0', 'Awaitable', true, 'awaitable', function (T) {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "MapKey|3|f6129d1a": true,
         };
+        computed[("Then|2|cf412abd<5e5c3ef0<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Catch|2|cf412abd<5e5c3ef0<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('01085207', 'Stringifier', false, '$stringifier', function () {
+    this.$interface('12bb6840', 'Releasable', false, 'releasable', function () {
       var $static = this;
-      $static.Get = function () {
-        return $g.________testlib.basictypes.JSON.new();
-      };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|6caba86c<01085207>": true,
-          "Stringify|2|6caba86c<e38ac9b0>": true,
+          "Release|2|cf412abd<void>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('08e7e2ac', 'Parser', false, '$parser', function () {
+    this.$interface('36712e70', 'Mappable', false, 'mappable', function () {
+      var $static = this;
+      this.$typesig = function () {
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "MapKey|3|2ba9796f": true,
+        };
+        return this.$cachedtypesig = computed;
+      };
+    });
+
+    this.$interface('c270daed', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         return $g.________testlib.basictypes.JSON.new();
@@ -1308,14 +1284,31 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|6caba86c<08e7e2ac>": true,
-          "Parse|2|6caba86c<c518fe3b<any>>": true,
+          "Get|1|cf412abd<c270daed>": true,
+          "Stringify|2|cf412abd<cb470bcc>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('c518fe3b', 'Mapping', true, 'mapping', function (T) {
+    this.$interface('a7e1ff95', 'Parser', false, '$parser', function () {
+      var $static = this;
+      $static.Get = function () {
+        return $g.________testlib.basictypes.JSON.new();
+      };
+      this.$typesig = function () {
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|cf412abd<a7e1ff95>": true,
+          "Parse|2|cf412abd<899aec48<any>>": true,
+        };
+        return this.$cachedtypesig = computed;
+      };
+    });
+
+    this.$type('899aec48', 'Mapping', true, 'mapping', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1369,15 +1362,15 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Keys|3|0456e039<e38ac9b0>": true,
+          "Keys|3|fc2d8214<cb470bcc>": true,
         };
-        computed[("Empty|1|6caba86c<c518fe3b<" + $t.typeid(T)) + ">>"] = true;
-        computed[("index|4|6caba86c<" + $t.typeid(T)) + ">"] = true;
+        computed[("Empty|1|cf412abd<899aec48<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|cf412abd<" + $t.typeid(T)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('0456e039', 'Slice', true, 'slice', function (T) {
+    this.$type('fc2d8214', 'Slice', true, 'slice', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1475,17 +1468,17 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Length|3|7c302777": true,
+          "Length|3|2e508ae6": true,
         };
-        computed[("Empty|1|6caba86c<0456e039<" + $t.typeid(T)) + ">>"] = true;
-        computed[("index|4|6caba86c<" + $t.typeid(T)) + ">"] = true;
-        computed[("Stream|2|6caba86c<d56f59a8<" + $t.typeid(T)) + ">>"] = true;
-        computed[("slice|4|6caba86c<0456e039<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Empty|1|cf412abd<fc2d8214<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|cf412abd<" + $t.typeid(T)) + ">"] = true;
+        computed[("Stream|2|cf412abd<9079975f<" + $t.typeid(T)) + ">>"] = true;
+        computed[("slice|4|cf412abd<fc2d8214<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('7c302777', 'Integer', false, 'int', function () {
+    this.$type('2e508ae6', 'Integer', false, 'int', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1537,23 +1530,23 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "range|4|6caba86c<d56f59a8<7c302777>>": true,
-          "exclusiverange|4|6caba86c<d56f59a8<7c302777>>": true,
-          "compare|4|6caba86c<7c302777>": true,
-          "equals|4|6caba86c<0e92a8bc>": true,
-          "plus|4|6caba86c<7c302777>": true,
-          "times|4|6caba86c<7c302777>": true,
-          "div|4|6caba86c<7c302777>": true,
-          "minus|4|6caba86c<7c302777>": true,
-          "Release|2|6caba86c<void>": true,
-          "MapKey|3|f6129d1a": true,
-          "String|2|6caba86c<e38ac9b0>": true,
+          "range|4|cf412abd<9079975f<2e508ae6>>": true,
+          "exclusiverange|4|cf412abd<9079975f<2e508ae6>>": true,
+          "compare|4|cf412abd<2e508ae6>": true,
+          "equals|4|cf412abd<aa28dc2d>": true,
+          "plus|4|cf412abd<2e508ae6>": true,
+          "times|4|cf412abd<2e508ae6>": true,
+          "div|4|cf412abd<2e508ae6>": true,
+          "minus|4|cf412abd<2e508ae6>": true,
+          "Release|2|cf412abd<void>": true,
+          "MapKey|3|2ba9796f": true,
+          "String|2|cf412abd<cb470bcc>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('0e92a8bc', 'Boolean', false, 'bool', function () {
+    this.$type('aa28dc2d', 'Boolean', false, 'bool', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1605,16 +1598,16 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "compare|4|6caba86c<7c302777>": true,
-          "equals|4|6caba86c<0e92a8bc>": true,
-          "String|2|6caba86c<e38ac9b0>": true,
-          "MapKey|3|f6129d1a": true,
+          "compare|4|cf412abd<2e508ae6>": true,
+          "equals|4|cf412abd<aa28dc2d>": true,
+          "String|2|cf412abd<cb470bcc>": true,
+          "MapKey|3|2ba9796f": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('3fffac51', 'Float64', false, 'float64', function () {
+    this.$type('19690b7c', 'Float64', false, 'float64', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1634,13 +1627,13 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Floor|2|6caba86c<7c302777>": true,
+          "Floor|2|cf412abd<2e508ae6>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('e38ac9b0', 'String', false, 'string', function () {
+    this.$type('cb470bcc', 'String', false, 'string', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1738,18 +1731,18 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|6caba86c<e38ac9b0>": true,
-          "equals|4|6caba86c<0e92a8bc>": true,
-          "plus|4|6caba86c<e38ac9b0>": true,
-          "MapKey|3|f6129d1a": true,
-          "Length|3|7c302777": true,
-          "slice|4|6caba86c<e38ac9b0>": true,
+          "String|2|cf412abd<cb470bcc>": true,
+          "equals|4|cf412abd<aa28dc2d>": true,
+          "plus|4|cf412abd<cb470bcc>": true,
+          "MapKey|3|2ba9796f": true,
+          "Length|3|2e508ae6": true,
+          "slice|4|cf412abd<cb470bcc>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('6f7ab60c', 'WrappedError', false, 'wrappederror', function () {
+    this.$type('551233a0', 'WrappedError', false, 'wrappederror', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1772,9 +1765,88 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "For|1|6caba86c<6f7ab60c>": true,
-          "Message|3|e38ac9b0": true,
+          "For|1|cf412abd<551233a0>": true,
+          "Message|3|cb470bcc": true,
         };
+        return this.$cachedtypesig = computed;
+      };
+    });
+
+    this.$type('915b9392', 'Promise', true, 'promise', function (T) {
+      var $instance = this.prototype;
+      var $static = this;
+      this.$box = function ($wrapped) {
+        var instance = new this();
+        instance[BOXED_DATA_PROPERTY] = $wrapped;
+        return instance;
+      };
+      this.$roottype = function () {
+        return $global.Promise;
+      };
+      $static.Execute = $t.markpromising(function (handler) {
+        var native;
+        var $current = 0;
+        var $continue = function ($resolve, $reject) {
+          native = /*#NativePromise.new(function(resolveNow Function1, rejectNow Function1) {#*/$t.nativenew(/*#NativePromise.new(function(resolveNow Function1, rejectNow Function1) {#*/$global.Promise)($t.markpromising(function (resolveNow, rejectNow) {
+            var $result;
+            var $current = 0;
+            var $continue = function ($resolve, $reject) {
+              localasyncloop: while (true) {
+                switch ($current) {
+                  case 0:
+/*#handler(function(value T) {#*/                    $promise.maybe(/*#handler(function(value T) {#*/handler(function (value) {
+/*#resolveNow.call(null, value)#*/                      resolveNow.call(/*#null, value)#*/null, /*#value)#*/value);
+                      return;
+                    }, function (err) {
+                      rejectNow.call(null, err);
+                      return;
+                    })).then(function ($result0) {
+                      $result = /*#handler(function(value T) {#*/$result0;
+                      $current = 1;
+                      $continue($resolve, $reject);
+                      return;
+                    }).catch(function (err) {
+                      $reject(err);
+                      return;
+                    });
+                    return;
+
+                  case 1:
+                    $resolve();
+                    return;
+
+                  default:
+                    $resolve();
+                    return;
+                }
+              }
+            };
+            return $promise.new($continue);
+          }));
+          $resolve($t.fastbox(native, $g.________testlib.basictypes.Promise(T)));
+          return;
+        };
+        return $promise.new($continue);
+      });
+      $instance.Then = function (callback) {
+        var $this = this;
+/*#this).then(callback)#*/        $this.$wrapped.then(/*#callback)#*/callback);
+        return $this;
+      };
+      $instance.Catch = function (callback) {
+        var $this = this;
+/*#this).catch(callback)#*/        $this.$wrapped.catch(/*#callback)#*/callback);
+        return $this;
+      };
+      this.$typesig = function () {
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+        };
+        computed[("Execute|1|cf412abd<915b9392<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Then|2|cf412abd<5e5c3ef0<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Catch|2|cf412abd<5e5c3ef0<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });

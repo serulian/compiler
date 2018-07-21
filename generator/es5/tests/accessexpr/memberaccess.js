@@ -25,9 +25,9 @@ $module('memberaccess', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Build|1|6caba86c<a95b5789>": true,
-        "InstanceFunc|2|6caba86c<void>": true,
-        "SomeProp|3|7c302777": true,
+        "Build|1|cf412abd<a95b5789>": true,
+        "InstanceFunc|2|cf412abd<void>": true,
+        "SomeProp|3|2e508ae6": true,
       };
       return this.$cachedtypesig = computed;
     };
