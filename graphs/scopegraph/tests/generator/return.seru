@@ -1,0 +1,8 @@
+function AnotherGenerator() int* {
+	yield 1
+}
+
+function SomeGenerator() int* {
+	yield 2
+	return AnotherGenerator()
+}
