@@ -148,7 +148,7 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 			resolvedType, hasResolvedType := tdg.GetTypeForSourceNode(resolvedTypeInfo.ResolvedType.Node())
 			if !hasResolvedType {
 				rtName, _ := resolvedTypeInfo.ResolvedType.Name()
-				panic(fmt.Sprintf("Could not find typegraph type for SRG type %v", rtName))
+				return tdg.AnyTypeReference(), fmt.Errorf("Could not find typegraph type for SRG type %v", rtName)
 			}
 
 			constructedRef = tdg.NewTypeReference(resolvedType)
