@@ -860,14 +860,7 @@ this.Serulian = (function($global) {
          return prom;
        }
 
-       return {
-          'then': function() {
-             return prom.Then.apply(prom, arguments);
-          },
-          'catch': function() {
-             return prom.Catch.apply(prom, arguments);
-          }
-       };
+       return new Promise(prom.Then.bind(prom), prom.Catch.bind(prom));
     }
   };
 

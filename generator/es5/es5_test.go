@@ -159,6 +159,7 @@ var generationTests = []generationTest{
 	generationTest{"await expression", "arrowexpr", "await", integrationTestSuccessExpected, ""},
 	generationTest{"multiawait expression", "arrowexpr", "multiawait", integrationTestNone, ""},
 	generationTest{"arrow expression", "arrowexpr", "arrow", integrationTestSuccessExpected, ""},
+	generationTest{"arrow over native expression", "arrowexpr", "native", integrationTestSuccessExpected, ""},
 
 	generationTest{"conditional expression", "condexpr", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"called conditional expression", "condexpr", "calls", integrationTestSuccessExpected, ""},
