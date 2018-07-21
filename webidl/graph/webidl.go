@@ -37,6 +37,8 @@ func NewIRG(graph compilergraph.SerulianGraph) *WebIRG {
 		layer: graph.NewGraphLayer("webirg", parser.NodeTypeTagged),
 	}
 
+	irg.typeCollapser = emptyTypeCollapser(irg)
+
 	modifier := irg.layer.NewModifier()
 	defer modifier.Apply()
 
