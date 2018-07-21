@@ -54,7 +54,7 @@ func (s snippets) Resolve(value string) string {
 		`
 
 	default:
-		panic("Unknown function kind in resolve")
+		panic(fmt.Sprintf("Unknown function kind `%v` in resolve", s.functionTraits.Type()))
 	}
 
 	return s.templater.Execute("resolve", template, value)

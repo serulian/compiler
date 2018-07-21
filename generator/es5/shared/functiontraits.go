@@ -5,12 +5,12 @@
 package shared
 
 // StateFunctionType defines an enumeration of types for a function.
-type StateFunctionType int
+type StateFunctionType string
 
 const (
-	StateFunctionNormalSync  StateFunctionType = iota
-	StateFunctionNormalAsync StateFunctionType = iota
-	StateFunctionSyncOrAsyncGenerator
+	StateFunctionNormalSync           StateFunctionType = "sync"
+	StateFunctionNormalAsync                            = "async"
+	StateFunctionSyncOrAsyncGenerator                   = "sync-or-async-generator"
 )
 
 // FunctionTraits creates and returns a StateFunctionTraits struct for the given traits of a function.
