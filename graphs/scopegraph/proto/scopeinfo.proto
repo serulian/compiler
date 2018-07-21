@@ -54,6 +54,8 @@ enum ScopeLabel {
 
 	SML_CHILD_YIELD_VALUE = 23; // Marks an SML child value to be yielded as a single value.
 	SML_CHILD_YIELD_FROM = 24; // Marks an SML child value to be yielded from as a stream.
+
+	HAS_RETURN = 25; // Mark a statement or one of its children as having a return statement.
 }
 
 message ScopeInfo {

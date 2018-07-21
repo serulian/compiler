@@ -96,6 +96,14 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"lambda generator test", "generator", "lambda", []expectedScopeEntry{},
 		"", ""},
 
+	// Return under generator.
+	scopegraphTest{"return under generator test", "generator", "return", []expectedScopeEntry{},
+		"Cannot return under a generator; use `yield in` to yield from another stream", ""},
+
+	// Conditional return under generator.
+	scopegraphTest{"conditional return under generator test", "generator", "conditionalreturn", []expectedScopeEntry{},
+		"Cannot return under a generator; use `yield in` to yield from another stream", ""},
+
 	/////////// Settling (return and reject) ///////////
 
 	// Success test.

@@ -705,6 +705,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 			return newScope().
 				Invalid().
 				Returning(actualReturnType, true).
+				WithLabel(proto.ScopeLabel_HAS_RETURN).
 				GetScope()
 		}
 	} else if actualReturnType.IsVoid() {
@@ -712,6 +713,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 		return newScope().
 			Invalid().
 			Returning(actualReturnType, true).
+			WithLabel(proto.ScopeLabel_HAS_RETURN).
 			GetScope()
 	} else {
 		if serr := actualReturnType.CheckSubTypeOf(expectedReturnType); serr != nil {
@@ -719,6 +721,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 			return newScope().
 				Invalid().
 				Returning(actualReturnType, true).
+				WithLabel(proto.ScopeLabel_HAS_RETURN).
 				GetScope()
 		}
 	}
@@ -727,6 +730,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 		IsTerminatingStatement().
 		Valid().
 		Returning(actualReturnType, true).
+		WithLabel(proto.ScopeLabel_HAS_RETURN).
 		GetScope()
 }
 
@@ -856,8 +860,8 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, contex
 	// type.
 	if isValid {
 		if labelSet.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT) {
-			if !returnedType.IsVoid() {
-				sb.decorateWithError(node, "Cannot return a type under a generator")
+			if labelSet.HasLabel(proto.ScopeLabel_HAS_RETURN) {
+				sb.decorateWithError(node, "Cannot return under a generator; use `yield in` to yield from another stream")
 				return newScope().Invalid().WithLabelSet(labelSet).GetScope()
 			}
 		} else {
