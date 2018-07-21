@@ -337,7 +337,7 @@ this.Serulian = (function($global) {
 
       // Check for defined equals operator.
       if (type.$equals) {
-        return type.$equals($t.box(left, type), $t.box(right, type)).$wrapped;
+        return type.$equals($t.box(left, type), $t.box(right, type))[BOXED_DATA_PROPERTY];
       }
 
       // Otherwise we cannot compare, so we treat the objects as not equal.

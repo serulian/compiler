@@ -214,7 +214,7 @@ this.Serulian = (function ($global) {
         return false;
       }
       if (type.$equals) {
-        return type.$equals($t.box(left, type), $t.box(right, type)).$wrapped;
+        return type.$equals($t.box(left, type), $t.box(right, type))[BOXED_DATA_PROPERTY];
       }
       return false;
     },
