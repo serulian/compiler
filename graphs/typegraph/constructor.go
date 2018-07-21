@@ -100,13 +100,19 @@ type Annotator struct {
 
 // DefineGenericConstraint defines the constraint on a type or type member generic to be that specified.
 func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
-	genericNode := an.tdg.getMatchingTypeGraphNode(genericSourceNode)
+	genericNode, ok := an.tdg.tryGetMatchingTypeGraphNode(genericSourceNode)
+	if !ok {
+		return
+	}
 	an.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
 // DefinePrincipalType defines the principal type that this agent accepts.
 func (an Annotator) DefinePrincipalType(typeSourceNode compilergraph.GraphNode, principal TypeReference) {
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	typeNode, ok := an.tdg.tryGetMatchingTypeGraphNode(typeSourceNode)
+	if !ok {
+		return
+	}
 	if typeNode.Kind() != NodeTypeAgent {
 		panic("Cannot set principal on non-agent type")
 	}
@@ -118,7 +124,10 @@ func (an Annotator) DefinePrincipalType(typeSourceNode compilergraph.GraphNode, 
 // parent is inherited and for nominal types, it describes conversion. Inheritance should only be used by legacy code
 // and never for SRG-based types: Agency composition should be used instead.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	typeNode, ok := an.tdg.tryGetMatchingTypeGraphNode(typeSourceNode)
+	if !ok {
+		return
+	}
 	typeKind := typeNode.Kind()
 
 	if typeKind != NodeTypeExternalInterface && typeKind != NodeTypeNominalType {
@@ -132,7 +141,11 @@ func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inh
 // with the given name. Agency composition is a type-safe form of composition with automatic back reference
 // to the composing type within the agent.
 func (an Annotator) DefineAgencyComposition(typeSourceNode compilergraph.GraphNode, agentType TypeReference, compositionName string) {
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	typeNode, ok := an.tdg.tryGetMatchingTypeGraphNode(typeSourceNode)
+	if !ok {
+		return
+	}
+
 	typeKind := typeNode.Kind()
 
 	if typeKind != NodeTypeClass && typeKind != NodeTypeAgent {
@@ -149,7 +162,11 @@ func (an Annotator) DefineAgencyComposition(typeSourceNode compilergraph.GraphNo
 func (an Annotator) DefineAliasedType(typeSourceNode compilergraph.GraphNode, aliased TGTypeDecl) {
 	aliased.TypeKind() // Will panic if not a valid type.
 
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	typeNode, ok := an.tdg.tryGetMatchingTypeGraphNode(typeSourceNode)
+	if !ok {
+		return
+	}
+
 	if typeNode.Kind() != NodeTypeAlias {
 		panic("Cannot alias a non-alias type declaration")
 	}
@@ -760,13 +777,19 @@ func (mb *MemberDecorator) CreateReturnable(sourceNode compilergraph.GraphNode, 
 
 // DefineParameterType defines the type of the parameter specified.
 func (mb *MemberDecorator) DefineParameterType(parameterSourceNode compilergraph.GraphNode, parameterType TypeReference) {
-	parameterNode := mb.tdg.getMatchingTypeGraphNode(parameterSourceNode)
+	parameterNode, ok := mb.tdg.tryGetMatchingTypeGraphNode(parameterSourceNode)
+	if !ok {
+		return
+	}
 	mb.modifier.Modify(parameterNode).DecorateWithTagged(NodePredicateParameterType, parameterType)
 }
 
 // DefineGenericConstraint defines the constraint on the type member generic to be that specified.
 func (mb *MemberDecorator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
-	genericNode := mb.tdg.getMatchingTypeGraphNode(genericSourceNode)
+	genericNode, ok := mb.tdg.tryGetMatchingTypeGraphNode(genericSourceNode)
+	if !ok {
+		return
+	}
 	mb.defineGenericConstraint(genericNode, constraint)
 }
 
