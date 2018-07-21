@@ -28,14 +28,18 @@ type TypeCollapser struct {
 // createTypeCollapser returns a new populated type collapser. Note that this call modifies the
 // graph, and therefore should only be invoked once.
 func createTypeCollapser(irg *WebIRG, modifier compilergraph.GraphLayerModifier) *TypeCollapser {
+	tc := emptyTypeCollapser(irg)
+	tc.populate(modifier)
+	return tc
+}
+
+func emptyTypeCollapser(irg *WebIRG) *TypeCollapser {
 	tc := &TypeCollapser{
 		irg:                    irg,
 		typesEncountered:       cmap.New(),
 		collapsedTypesByNodeID: cmap.New(),
 		globalDeclarations:     make([]IRGDeclaration, 0),
 	}
-
-	tc.populate(modifier)
 	return tc
 }
 
