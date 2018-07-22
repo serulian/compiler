@@ -58,6 +58,7 @@ func (ft *goldenTest) writeFormatted(value []byte) {
 
 var goldenTests = []goldenTest{
 	{"basic test", "basic"},
+	{"module test", "module"},
 	{"comments test", "comments"},
 	{"unary precedence test", "unary"},
 	{"binary precedence test", "binary"},
@@ -192,11 +193,8 @@ func TestAll(t *testing.T) {
 		inputSource := compilercommon.InputSource(filePath)
 		rootNode := parser.Parse(parseTree.createAstNode, nil, inputSource, string(source))
 		if len(parseTree.errors) > 0 {
-			t.Logf("Skipping file %s\n", filePath)
 			return true, nil
 		}
-
-		t.Logf("Checking file %s\n", filePath)
 
 		// Format the source file.
 		formatted := buildFormattedSource(parseTree, rootNode.(formatterNode), importHandlingInfo{})

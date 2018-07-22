@@ -1,0 +1,3 @@
+var SomeThing int = 2
+
+const SomeConstThing string = "hello world!"
