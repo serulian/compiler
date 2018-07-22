@@ -9,6 +9,7 @@ package grok
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
@@ -45,6 +46,10 @@ type Groker struct {
 	// buildHandleLock defines a lock around the cancelation of an existing handle build
 	// and the start of a new one.
 	buildHandleLock *sync.Mutex
+
+	// maximumBuildDuration defines the maximum duration a Grok handle can be built
+	// before it times out.
+	maximumBuildDuration time.Duration
 }
 
 // Config defines the config for creating a Grok.
@@ -64,6 +69,10 @@ type Config struct {
 	// ScopePaths, if not empty, indicates the paths that should be considered by the
 	// compiler when scoping.
 	ScopePaths []compilercommon.InputSource
+
+	// MaximumBuildDuration defines the maximum duration a Grok handle can be built
+	// before it times out.
+	MaximumBuildDuration time.Duration
 }
 
 // NewGroker returns a new Groker for the given entrypoint file/directory path.
@@ -74,6 +83,7 @@ func NewGroker(entrypointPath string, vcsDevelopmentDirectories []string, librar
 		Libraries:                 libraries,
 		PathLoader:                packageloader.LocalFilePathLoader{},
 		ScopePaths:                []compilercommon.InputSource{},
+		MaximumBuildDuration:      5 * time.Second,
 	})
 }
 
@@ -90,6 +100,7 @@ func NewGrokerWithConfig(config Config) *Groker {
 		libraries:                 config.Libraries,
 		pathLoader:                config.PathLoader,
 		scopePathMap:              scopePathMap,
+		maximumBuildDuration:      config.MaximumBuildDuration,
 
 		buildHandleLock: &sync.Mutex{},
 	}
@@ -161,28 +172,34 @@ func (g *Groker) BuildHandle() chan HandleResult {
 	g.buildHandleLock.Unlock()
 
 	go func() {
-		result := <-internalChan
-		if result.err != nil {
-			resultChan <- HandleResult{Handle{}, result.err}
-			return
-		}
+		select {
+		case result := <-internalChan:
+			if result.err != nil {
+				resultChan <- HandleResult{Handle{}, result.err}
+				return
+			}
 
-		scopeResult := result.scopeResult
-		if scopeResult.Graph == nil {
-			resultChan <- HandleResult{Handle{}, fmt.Errorf("Handle construction was canceled")}
-			return
-		}
+			scopeResult := result.scopeResult
+			if scopeResult.Graph == nil {
+				resultChan <- HandleResult{Handle{}, fmt.Errorf("Handle construction was canceled")}
+				return
+			}
 
-		newHandle := Handle{
-			scopeResult:        scopeResult,
-			structureFinder:    scopeResult.Graph.SourceGraph().NewSourceStructureFinder(),
-			groker:             g,
-			importInspectCache: cmap.New(),
-			pathFiltersMap:     g.scopePathMap,
-		}
+			newHandle := Handle{
+				scopeResult:        scopeResult,
+				structureFinder:    scopeResult.Graph.SourceGraph().NewSourceStructureFinder(),
+				groker:             g,
+				importInspectCache: cmap.New(),
+				pathFiltersMap:     g.scopePathMap,
+			}
 
-		g.currentHandle = &newHandle
-		resultChan <- HandleResult{newHandle, nil}
+			g.currentHandle = &newHandle
+			resultChan <- HandleResult{newHandle, nil}
+
+		case <-time.After(g.maximumBuildDuration):
+			newCancelationFunction()
+			resultChan <- HandleResult{Handle{}, fmt.Errorf("Handle construction timed out")}
+		}
 	}()
 
 	return resultChan

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -245,6 +246,7 @@ func TestGrokCompletion(t *testing.T) {
 			Libraries:                 []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, "", "testcore"}},
 			PathLoader:                packageloader.LocalFilePathLoader{},
 			ScopePaths:                []compilercommon.InputSource{compilercommon.InputSource(testSourcePath)},
+			MaximumBuildDuration:      5 * time.Second,
 		})
 		handle, err := groker.GetHandleWithOption(HandleMustBeFresh)
 
