@@ -4,11 +4,18 @@
 
 package formatter
 
-import "github.com/serulian/compiler/sourceshape"
+import (
+	"github.com/serulian/compiler/sourceshape"
+)
 
 // emitVariable emits the specified variable.
 func (sf *sourceFormatter) emitVariable(node formatterNode) {
-	sf.append("var")
+	if node.hasProperty(sourceshape.NodeVariableStatementConstant) {
+		sf.append("const")
+	} else {
+		sf.append("var")
+	}
+
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodeVariableStatementName))
 
