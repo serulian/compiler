@@ -19,8 +19,8 @@ $module('constructable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Get|1|6caba86c<5fd250f1>": true,
-        "SomeBool|3|0e92a8bc": true,
+        "Get|1|cf412abd<5fd250f1>": true,
+        "SomeBool|3|aa28dc2d": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -36,8 +36,8 @@ $module('constructable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Get|1|6caba86c<cd09b8fb>": true,
-        "SomeBool|3|0e92a8bc": true,
+        "Get|1|cf412abd<cd09b8fb>": true,
+        "SomeBool|3|aa28dc2d": true,
       };
       return this.$cachedtypesig = computed;
     };

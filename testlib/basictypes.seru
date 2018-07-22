@@ -5,6 +5,7 @@ from webidl`basic` import JSON as NativeJSON
 from webidl`basic` import Math
 from webidl`basic` import Number
 from webidl`basic` import Object
+from webidl`basic` import Promise as NativePromise, Function1
 from webidl`basic` import String as NativeString
 from webidl`basic` import __serulian_internal as Internal
 from webidl`basic` import debugprint
@@ -406,5 +407,33 @@ type WrappedError : NativeError {
 
 	property Message string {
 		get { return string(NativeError(this).message) }
+	}
+}
+
+/**
+ * Promise wraps a native ES6 promise with well-defined methods.
+ */
+@•typealias('promise')
+type Promise<T> : NativePromise {
+	constructor Execute(handler function<void>(function<void>(T), function<void>(error))) {
+		var native = NativePromise.new(function(resolveNow Function1, rejectNow Function1) {
+			handler(function(value T) {
+				resolveNow.call(null, value)
+			}, function(err error) {
+				rejectNow.call(null, err)
+			})
+		})
+
+		return Promise<T>(native)
+	}
+
+	function Then(callback function<void>(T)) awaitable<T> {
+		NativePromise(this).then(callback)
+		return this
+	}
+
+	function Catch(callback function<void>(error)) awaitable<T> {
+		NativePromise(this).catch(callback)
+		return this
 	}
 }

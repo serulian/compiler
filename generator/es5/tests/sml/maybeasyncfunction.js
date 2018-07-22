@@ -43,7 +43,7 @@ $module('maybeasyncfunction', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SimpleFunction|2|6caba86c<0e92a8bc>": true,
+        "SimpleFunction|2|cf412abd<aa28dc2d>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -65,7 +65,7 @@ $module('maybeasyncfunction', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SimpleFunction|2|6caba86c<0e92a8bc>": true,
+        "SimpleFunction|2|cf412abd<aa28dc2d>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -78,7 +78,7 @@ $module('maybeasyncfunction', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SimpleFunction|2|6caba86c<0e92a8bc>": true,
+        "SimpleFunction|2|cf412abd<aa28dc2d>": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -21,12 +21,12 @@ $module('nullbox', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|6caba86c<45b3c939>": true,
-        "equals|4|6caba86c<0e92a8bc>": true,
-        "Stringify|2|6caba86c<e38ac9b0>": true,
-        "Mapping|2|6caba86c<c518fe3b<any>>": true,
-        "Clone|2|6caba86c<45b3c939>": true,
-        "String|2|6caba86c<e38ac9b0>": true,
+        "Parse|1|cf412abd<45b3c939>": true,
+        "equals|4|cf412abd<aa28dc2d>": true,
+        "Stringify|2|cf412abd<cb470bcc>": true,
+        "Mapping|2|cf412abd<899aec48<any>>": true,
+        "Clone|2|cf412abd<45b3c939>": true,
+        "String|2|cf412abd<cb470bcc>": true,
       };
       return this.$cachedtypesig = computed;
     };

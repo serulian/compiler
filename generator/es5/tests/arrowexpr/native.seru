@@ -1,0 +1,15 @@
+from webidl`../../../../testlib/basic` import Promise as NativePromise, Function1
+
+function MakeSomePromise() NativePromise {
+	return NativePromise.new(function(r1 Function1, r2 Function1) {
+		r1.call(null, 42)
+	})
+}
+
+function DoSomething(p awaitable<int>) int {
+	return <- p
+}
+
+function TEST() any {
+	return DoSomething(promise<int>(MakeSomePromise())) == 42
+}

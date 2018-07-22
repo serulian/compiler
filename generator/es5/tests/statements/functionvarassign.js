@@ -23,7 +23,7 @@ $module('functionvarassign', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Default|1|6caba86c<e7dcfe11>": true,
+        "Default|1|cf412abd<e7dcfe11>": true,
       };
       return this.$cachedtypesig = computed;
     };

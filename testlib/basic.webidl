@@ -66,3 +66,14 @@ interface Error {
 interface Math {
   static Number floor(Number value);
 };
+
+[Constructor(any handler)]
+interface Promise {
+	Promise then(any onFulfilled, optional any onRejected);
+	Promise catch(any onRejected);
+};
+
+[Constructor]
+interface Function1 {
+  void call(any thisArg, any arg1);
+};
