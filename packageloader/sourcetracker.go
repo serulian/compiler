@@ -25,21 +25,19 @@ type SourceTracker struct {
 	pathLoader PathLoader
 }
 
-// ModifiedSourcePaths returns the source paths that have been modified since originally read,
-// if any.
-func (st SourceTracker) ModifiedSourcePaths() ([]compilercommon.InputSource, error) {
-	var modifiedPaths = make([]compilercommon.InputSource, 0, len(st.sourceFiles))
+// HasModifiedSourcePaths returns whether any of the source paths have been modified since originally read.
+func (st SourceTracker) HasModifiedSourcePaths() (bool, error) {
 	for _, file := range st.sourceFiles {
 		current, err := st.pathLoader.GetRevisionID(string(file.sourcePath))
 		if err != nil {
-			return modifiedPaths, err
+			return false, err
 		}
 
 		if current != file.revisionID {
-			modifiedPaths = append(modifiedPaths, file.sourcePath)
+			return true, nil
 		}
 	}
-	return modifiedPaths, nil
+	return false, nil
 }
 
 // PositionType defines the type of positions given to GetPositionOffsetFromTracked.

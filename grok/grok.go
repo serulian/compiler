@@ -133,8 +133,8 @@ func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Han
 			return handle, nil
 		}
 
-		modified, err := handle.scopeResult.SourceTracker.ModifiedSourcePaths()
-		if err == nil && len(modified) == 0 {
+		hasModified, err := handle.scopeResult.SourceTracker.HasModifiedSourcePaths()
+		if err == nil && !hasModified {
 			return handle, nil
 		}
 	}
