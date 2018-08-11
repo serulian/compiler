@@ -174,20 +174,28 @@ func (st SourceTracker) LineAndColToRunePosition(lineNumber int, colPosition int
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
 }
 
-func (st SourceTracker) TextForLine(lineNumber int, path compilercommon.InputSource, sourceOption compilercommon.SourceMappingOption) (string, error) {
+func (st SourceTracker) getContents(path compilercommon.InputSource, sourceOption compilercommon.SourceMappingOption) ([]byte, error) {
 	tsf, exists := st.sourceFiles[path]
 	if !exists {
-		return "", fmt.Errorf("Could not find path %s", path)
+		return []byte{}, fmt.Errorf("Could not find path %s", path)
 	}
 
-	contents := tsf.contents
-	if sourceOption == compilercommon.SourceMapCurrent {
-		currentContents, err := st.pathLoader.LoadSourceFile(string(path))
-		if err != nil {
-			return "", err
-		}
+	currentVersion, err := st.pathLoader.GetRevisionID(string(path))
+	if err != nil {
+		return []byte{}, err
+	}
 
-		contents = currentContents
+	if sourceOption != compilercommon.SourceMapCurrent || currentVersion == tsf.revisionID {
+		return tsf.contents, nil
+	}
+
+	return st.pathLoader.LoadSourceFile(string(path))
+}
+
+func (st SourceTracker) TextForLine(lineNumber int, path compilercommon.InputSource, sourceOption compilercommon.SourceMappingOption) (string, error) {
+	contents, err := st.getContents(path, sourceOption)
+	if err != nil {
+		return "", err
 	}
 
 	lines := strings.Split(string(contents), "\n")
