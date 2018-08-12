@@ -72,6 +72,25 @@ func (tpl *anotherTestPathLoader) GetRevisionID(path string) (int64, error) {
 	return 0, fmt.Errorf("Could not find file: %s", path)
 }
 
+func assertPositionMapping(t *testing.T, tracker SourceTracker, sourceInput compilercommon.InputSource, sourceText string, sourceOption compilercommon.SourceMappingOption) {
+	lines := strings.Split(sourceText, "\n")
+
+	var counter = 0
+	for lineIndex, lineText := range lines {
+		for charIndex := range lineText {
+			l, c, err := tracker.RunePositionToLineAndCol(counter+charIndex, sourceInput, sourceOption)
+			assert.Nil(t, err)
+			assert.Equal(t, lineIndex, l)
+			assert.Equal(t, charIndex, c)
+
+			r, err := tracker.LineAndColToRunePosition(lineIndex, charIndex, sourceInput, sourceOption)
+			assert.Nil(t, err)
+			assert.Equal(t, r, counter+charIndex)
+		}
+		counter += len(lineText) + 1
+	}
+}
+
 func TestSourceTracker(t *testing.T) {
 	pathLoader := &anotherTestPathLoader{
 		files: map[string]anotherTestFile{},
@@ -117,8 +136,20 @@ func TestSourceTracker(t *testing.T) {
 		return
 	}
 
+	// Check position mapping.
+	assertPositionMapping(t, tracker, fooSource, fooContents, compilercommon.SourceMapTracked)
+	assertPositionMapping(t, tracker, fooSource, fooContents, compilercommon.SourceMapCurrent)
+
 	// Change the text in the path loader.
-	pathLoader.setFile("foo.txt", "some awesome\nfoo\nfile")
+	updatedContents := "some awesome\nfoo\nfile"
+	pathLoader.setFile("foo.txt", updatedContents)
+
+	// Check position mapping.
+	assertPositionMapping(t, tracker, fooSource, fooContents, compilercommon.SourceMapTracked)
+	assertPositionMapping(t, tracker, fooSource, updatedContents, compilercommon.SourceMapCurrent)
+
+	// Check current again to ensure caching.
+	assertPositionMapping(t, tracker, fooSource, updatedContents, compilercommon.SourceMapCurrent)
 
 	// Make sure contents have not changed, but offsets and diffs have.
 	trackedFooContents, _ = tracker.LoadedContents(fooSource)
