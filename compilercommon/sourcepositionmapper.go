@@ -21,8 +21,14 @@ type SourcePositionMapper struct {
 	lineMap map[int]inclusiveRange
 }
 
+// EmptySourcePositionMapper returns an empty source position mapper.
+func EmptySourcePositionMapper() SourcePositionMapper {
+	rangeTree := redblacktree.NewWith(inclusiveComparator)
+	return SourcePositionMapper{rangeTree, map[int]inclusiveRange{}}
+}
+
 // CreateSourcePositionMapper returns a source position mapper for the contents of a source file.
-func CreateSourcePositionMapper(contents []byte) *SourcePositionMapper {
+func CreateSourcePositionMapper(contents []byte) SourcePositionMapper {
 	lines := strings.Split(string(contents), "\n")
 	rangeTree := redblacktree.NewWith(inclusiveComparator)
 	lineMap := map[int]inclusiveRange{}
@@ -35,7 +41,7 @@ func CreateSourcePositionMapper(contents []byte) *SourcePositionMapper {
 		currentStart = lineEnd + 1
 	}
 
-	return &SourcePositionMapper{rangeTree, lineMap}
+	return SourcePositionMapper{rangeTree, lineMap}
 }
 
 type inclusiveRange struct {
@@ -68,7 +74,7 @@ func inclusiveComparator(a, b interface{}) int {
 }
 
 // RunePositionToLineAndCol returns the line number and column position of the rune position in source.
-func (spm *SourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int, int, error) {
+func (spm SourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int, int, error) {
 	ls, found := spm.rangeTree.Get(inclusiveRange{runePosition, runePosition})
 	if !found {
 		return 0, 0, fmt.Errorf("Unknown rune position %v in source file", runePosition)
@@ -79,7 +85,7 @@ func (spm *SourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int
 }
 
 // LineAndColToRunePosition returns the rune position of the line number and column position in source.
-func (spm *SourcePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int) (int, error) {
+func (spm SourcePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int) (int, error) {
 	lineRuneInfo, hasLine := spm.lineMap[lineNumber]
 	if !hasLine {
 		return 0, fmt.Errorf("Unknown line %v in source file", lineNumber)

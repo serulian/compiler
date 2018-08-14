@@ -77,7 +77,7 @@ type sourceFormatter struct {
 
 	expressionStack *compilerutil.Stack // Stack of the current nesting of expressions.
 
-	positionMapper *compilercommon.SourcePositionMapper // Mapper for mapping from the input source.
+	positionMapper compilercommon.SourcePositionMapper // Mapper for mapping from the input source.
 
 	existingSourceMap  *sourcemap.SourceMap // The source map for the input code.
 	formattedSourceMap *sourcemap.SourceMap // The source map for the formatted code.
