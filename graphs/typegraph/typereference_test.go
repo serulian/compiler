@@ -1390,6 +1390,27 @@ func TestIntersection(t *testing.T) {
 
 		// SomeStruct? & AnotherStruct? = struct?
 		intersectionTest{"SomeStruct?", "AnotherStruct?", "struct?"},
+
+		// SomeStruct & null = SomeStruct?
+		intersectionTest{"SomeStruct", "null", "SomeStruct?"},
+
+		// SomeStruct? & null = SomeStruct?
+		intersectionTest{"SomeStruct?", "null", "SomeStruct?"},
+
+		// null & null = null
+		intersectionTest{"null", "null", "null"},
+
+		// SomeClass & null = SomeClass?
+		intersectionTest{"SomeClass", "null", "SomeClass?"},
+
+		// null & SomeClass = SomeClass?
+		intersectionTest{"null", "SomeClass", "SomeClass?"},
+
+		// any & null = any
+		intersectionTest{"any", "null", "any"},
+
+		// null & any = any
+		intersectionTest{"null", "any", "any"},
 	}
 
 	for _, test := range tests {

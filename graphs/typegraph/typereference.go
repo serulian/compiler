@@ -1172,6 +1172,15 @@ func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 		}
 	}
 
+	// If one type is `null`, then the intersection is a nullable version of the other type.
+	if tr.IsNull() {
+		return other.AsNullable()
+	}
+
+	if other.IsNull() {
+		return tr.AsNullable()
+	}
+
 	// TODO: support some sort of union types here if/when we need to?
 	return tr.tdg.AnyTypeReference()
 }
