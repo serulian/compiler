@@ -48,6 +48,9 @@ func resolveTypeReferenceString(humanString string, graph *TypeGraph, refSourceN
 
 	case "struct":
 		return graph.StructTypeReference()
+
+	case "null":
+		return graph.NullTypeReference()
 	}
 
 	// Check for a reference to a generic under a type.
