@@ -48,6 +48,10 @@ func (sf *sourceFormatter) emitLambdaExpression(node formatterNode) {
 // emitLambdaParameter emits a parameter to a lambda expression.
 func (sf *sourceFormatter) emitLambdaParameter(node formatterNode) {
 	sf.append(node.getProperty(sourceshape.NodeLambdaExpressionParameterName))
+	if node.hasChild(sourceshape.NodeLambdaExpressionParameterExplicitType) {
+		sf.append(" ")
+		sf.emitNode(node.getChild(sourceshape.NodeLambdaExpressionParameterExplicitType))
+	}
 }
 
 // nonWrappingUnaryNodeKinds defines the node types of children of a unary that do *not*

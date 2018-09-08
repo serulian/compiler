@@ -1,0 +1,13 @@
+function DoSomething() {
+	() => someExpr
+	(a) => someOtherExpr
+	(a, b) => someThirdExpr
+	(a int, b string*) => someTypedExpr
+	(a, b []string, c) => anotherExpr
+	(a, b foo.bar, c) => anotherExpr
+
+	function(first int, second bool) { return first }
+	function(first int, second bool) int {
+		return first
+	}
+}

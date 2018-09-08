@@ -4,7 +4,9 @@
 
 package formatter
 
-import "github.com/serulian/compiler/sourceshape"
+import (
+	"github.com/serulian/compiler/sourceshape"
+)
 
 // emitField emits the source of a declared field.
 func (sf *sourceFormatter) emitField(node formatterNode) {
