@@ -17,6 +17,8 @@ import (
 
 var _ = fmt.Sprintf
 
+var MAX_LINE_LENGTH = 80
+
 // emitAwaitExpression emits an await arrow expression.
 func (sf *sourceFormatter) emitAwaitExpression(node formatterNode) {
 	sf.append("<- ")
@@ -443,7 +445,7 @@ func (sf *sourceFormatter) emitInnerExpressions(exprs []formatterNode) {
 		innerExprs[index] = formatted
 		length += len(formatted)
 
-		if sf.existingLineLength+length > 80 {
+		if sf.existingLineLength+length > MAX_LINE_LENGTH {
 			inline = false
 		}
 	}
@@ -496,23 +498,23 @@ func (sf *sourceFormatter) emitKeywordNotExpression(node formatterNode) {
 
 // emitSmlAttributes emits all the attributes/decorators under the given SML expression
 // node.
-func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate string, tagOffset int) bool {
+func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate string, tagOffset int, attrOffset int) (int, bool) {
 	attributes := node.getChildren(predicate)
 	if len(attributes) == 0 {
-		return false
+		return attrOffset, false
 	}
 
 	newline := false
-	for _, attribute := range attributes {
+	for index, attribute := range attributes {
 		// Skip nested attributes.
 		if attribute.hasProperty(sourceshape.NodeSmlAttributeNested) {
 			continue
 		}
 
-		// Determine if the attribute + the existing text will push the line length past 80.
+		// Determine if the attribute + the existing text will push the line length past MAX_LINE_LENGTH.
 		// If so, we push the attribute to the next line.
 		formatted, hasNewLine := sf.formatNode(attribute)
-		if len(formatted)+sf.existingLineLength > 80 && !hasNewLine {
+		if (attrOffset+index) > 0 && len(formatted)+sf.existingLineLength > MAX_LINE_LENGTH && !hasNewLine {
 			sf.appendLine()
 			var i = 0
 			for i = 0; i < tagOffset-sf.indentationLevel+1; i++ {
@@ -525,7 +527,7 @@ func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate strin
 
 		sf.append(formatted)
 	}
-	return newline
+	return attrOffset + len(attributes), newline
 }
 
 // formatSmlChildren formats the given children of an SML expression into a formatted source string
@@ -623,7 +625,7 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 			formatted = strings.TrimLeftFunc(formatted, unicode.IsSpace)
 		}
 
-		if (currentLineCount + len(strings.TrimRightFunc(formatted, unicode.IsSpace))) > 80 {
+		if (currentLineCount + len(strings.TrimRightFunc(formatted, unicode.IsSpace))) > MAX_LINE_LENGTH {
 			currentLineCount = 0
 			cutPoints[index] = true
 		}
@@ -714,7 +716,9 @@ func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode,
 	postTagPosition := sf.existingLineLength
 
 	// Add the (optional) loop.
+	startingOffset := 0
 	if loopNode != nil {
+		startingOffset = 1
 		sf.append(" [")
 		sf.append("for ")
 		sf.emitNode(loopNode.getChild(sourceshape.NodeLoopExpressionNamedValue))
@@ -724,8 +728,8 @@ func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode,
 	}
 
 	// Add attributes and decorators.
-	attrNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionAttribute, postTagPosition)
-	decoratorNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionDecorator, postTagPosition)
+	attrOffset, attrNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionAttribute, postTagPosition, startingOffset)
+	_, decoratorNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionDecorator, postTagPosition, attrOffset)
 	attributesNewLine := attrNewLine || decoratorNewLine
 
 	// Finish the opening tag.

@@ -1,0 +1,6 @@
+function DoSomething() {
+	<Div @If={this.state.currentState == 'chatting' || this.state.currentState == 'chat-loaded'}
+	     @Foo="bar" />
+	<Div Foo="bar"
+	     @If={this.state.currentState == 'chatting' || this.state.currentState == 'chat-loaded'} />
+}
