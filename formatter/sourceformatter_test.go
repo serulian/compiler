@@ -90,6 +90,7 @@ var goldenTests = []goldenTest{
 	{"precedence test", "precedence"},
 	{"long sml loop test", "longsmlloop"},
 	{"lambda test", "lambda"},
+	{"sml long attribute test", "smllongattr"},
 }
 
 func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, formatterNode) {
