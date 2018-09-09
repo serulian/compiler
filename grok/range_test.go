@@ -118,6 +118,7 @@ var grokRangeTests = []grokRangeTest{
 	grokRangeTest{"invalidtyperef", false, []grokNamedRange{}},
 
 	grokRangeTest{"webidl", true, []grokNamedRange{
+		grokNamedRange{"sir", NamedReference, "SomeInterface", "interface SomeInterface"},
 		grokNamedRange{"si", TypeRef, "SomeInterface", "interface SomeInterface"},
 	}},
 

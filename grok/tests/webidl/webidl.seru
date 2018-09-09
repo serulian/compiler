@@ -1,3 +1,4 @@
+///                           [sir        ]
 from webidl`something` import SomeInterface
 
 function DoSomething(something any) {

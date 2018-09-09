@@ -114,6 +114,19 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 			}
 		}
 
+		resolvedTypeInfo, found := packageImport.ResolveType()
+		if found && resolvedTypeInfo.IsExternalPackage {
+			resolvedType, hasResolvedType := gh.scopeResult.Graph.TypeGraph().ResolveTypeUnderPackage(resolvedTypeInfo.ExternalPackageTypePath, resolvedTypeInfo.ExternalPackage)
+			if hasResolvedType {
+				return RangeInformation{
+					Kind:           NamedReference,
+					SourceRanges:   sourceRangesOf(resolvedType),
+					NamedReference: gh.scopeResult.Graph.ReferencedNameForTypeOrMember(resolvedType),
+					TypeReference:  gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+				}, nil
+			}
+		}
+
 		// TODO: we might need the source here.
 		subsource, _ := packageImport.Subsource()
 		return RangeInformation{
