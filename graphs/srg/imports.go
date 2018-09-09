@@ -117,6 +117,18 @@ func (i SRGPackageImport) ResolvedTypeOrMember() (SRGTypeOrMember, bool) {
 	return packageInfo.FindTypeOrMemberByName(subsource)
 }
 
+// ResolveType returns the resolved type of this import, if any.
+func (i SRGPackageImport) ResolveType() (TypeResolutionResult, bool) {
+	// Load the package information.
+	packageInfo, err := i.srg.getPackageForImport(i.GraphNode)
+	if err != nil {
+		return TypeResolutionResult{}, false
+	}
+
+	subsource, _ := i.Subsource()
+	return packageInfo.ResolveType(subsource)
+}
+
 // Code returns a code-like summarization of the import, for human consumption.
 func (i SRGPackageImport) Code() (compilercommon.CodeSummary, bool) {
 	importNode := i.GraphNode.GetIncomingNode(sourceshape.NodeImportPredicatePackageRef)
