@@ -5,7 +5,7 @@
 package grok
 
 import (
-	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -51,14 +51,19 @@ func trimDocumentation(documentation string) string {
 	return strings.TrimSpace(parts[0])
 }
 
-// highlightParameter highlights the given parameter name found in the given documentation, by replacing its ticked
-// form (`example`) with a bolded form (***example***).
+// highlightParameter highlights the given parameter name found in the given documentation, by replacing all ticked
+// forms that *aren't* the parameter with italics forms instead.
 func highlightParameter(documentation string, paramName string) string {
-	if paramName != "" {
-		tickedParam := fmt.Sprintf("`%s`", paramName)
-		boldParam := fmt.Sprintf("***%s***", paramName)
-		return strings.Replace(documentation, tickedParam, boldParam, -1)
+	if paramName == "" {
+		return documentation
 	}
 
+	var parameterRegex = regexp.MustCompile("([^`]|^)`(" + paramName + ")`([^`]|$)")
+	var allParametersRegex = regexp.MustCompile("([^`]|^)`([a-zA-Z0-9_]+)`([^`]|$)")
+	var SENTINAL = "#SENTINAL#"
+
+	documentation = parameterRegex.ReplaceAllString(documentation, "$1"+SENTINAL+"$3")
+	documentation = allParametersRegex.ReplaceAllString(documentation, `$1**$2**$3`)
+	documentation = strings.Replace(documentation, SENTINAL, "`"+paramName+"`", -1)
 	return documentation
 }

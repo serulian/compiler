@@ -61,8 +61,8 @@ var grokSignaturesTests = []grokSignaturesTest{
 					"DoSomething does something. When `someParam` is specified, good things happen. `anotherParam` controls other things.",
 					0,
 					[]expectedParam{
-						expectedParam{"someParam", "Integer", "When ***someParam*** is specified, good things happen"},
-						expectedParam{"anotherParam", "String", "***anotherParam*** controls other things"},
+						expectedParam{"someParam", "Integer", "When `someParam` is specified, good things happen"},
+						expectedParam{"anotherParam", "String", "`anotherParam` controls other things"},
 					},
 				},
 			},
@@ -74,8 +74,8 @@ var grokSignaturesTests = []grokSignaturesTest{
 					"DoSomething does something. When `someParam` is specified, good things happen. `anotherParam` controls other things.",
 					1,
 					[]expectedParam{
-						expectedParam{"someParam", "Integer", "When ***someParam*** is specified, good things happen"},
-						expectedParam{"anotherParam", "String", "***anotherParam*** controls other things"},
+						expectedParam{"someParam", "Integer", "When `someParam` is specified, good things happen"},
+						expectedParam{"anotherParam", "String", "`anotherParam` controls other things"},
 					},
 				},
 			},
@@ -87,7 +87,7 @@ var grokSignaturesTests = []grokSignaturesTest{
 					"A cool indexer, that takes `index`.",
 					0,
 					[]expectedParam{
-						expectedParam{"index", "Integer", "A cool indexer, that takes ***index***"},
+						expectedParam{"index", "Integer", "A cool indexer, that takes `index`"},
 					},
 				},
 			},
