@@ -82,6 +82,11 @@ func (rn ReferencedName) IsLocal() bool {
 	return rn.typeInfo == nil
 }
 
+// IsParameter returns true if the referenced name is a parameter.
+func (rn ReferencedName) IsParameter() bool {
+	return rn.IsLocal() && rn.srgInfo.ScopeKind() == srg.NamedScopeParameter
+}
+
 // IsProperty returns true if the referenced name points to a property.
 func (rn ReferencedName) IsProperty() bool {
 	member, isMember := rn.Member()

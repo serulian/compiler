@@ -126,9 +126,11 @@ func (ri RangeInformation) codeToMarkedText(cs compilercommon.CodeSummary) []Mar
 	}
 
 	trimmed := trimDocumentation(cs.Documentation)
-	name, hasName := ri.Name()
-	if hasName {
-		trimmed = highlightParameter(trimmed, name)
+	if ri.Kind == NamedReference && ri.NamedReference.IsParameter() {
+		name, hasName := ri.Name()
+		if hasName {
+			trimmed = highlightParameter(trimmed, name)
+		}
 	}
 
 	if trimmed != "" {
