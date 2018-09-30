@@ -120,6 +120,7 @@ var grokRangeTests = []grokRangeTest{
 	grokRangeTest{"webidl", true, []grokNamedRange{
 		grokNamedRange{"sir", NamedReference, "SomeInterface", "interface SomeInterface"},
 		grokNamedRange{"si", TypeRef, "SomeInterface", "interface SomeInterface"},
+		grokNamedRange{"sf", NamedReference, "someFunction", "function<void> someFunction"},
 	}},
 
 	grokRangeTest{"syntaxerror", false, []grokNamedRange{
