@@ -1,5 +1,29 @@
 # Change Log
 
+## [v0.3.2](https://github.com/serulian/compiler/tree/v0.3.2) (2018-09-24)
+[Full Changelog](https://github.com/serulian/compiler/compare/v0.3.1...v0.3.2)
+
+**Implemented enhancements:**
+
+- Change Grok to keep the current parameter in `code` form, and instead change other parameters to be bold [\#312](https://github.com/serulian/compiler/pull/312) ([josephschorr](https://github.com/josephschorr))
+- Fix formatting of long attributes in SML tags [\#310](https://github.com/serulian/compiler/pull/310) ([josephschorr](https://github.com/josephschorr))
+- SourceTracker performance and code improvements [\#307](https://github.com/serulian/compiler/pull/307) ([josephschorr](https://github.com/josephschorr))
+- Add a configurable timeout for Grok handle construction [\#306](https://github.com/serulian/compiler/pull/306) ([josephschorr](https://github.com/josephschorr))
+
+**Fixed bugs:**
+
+- Fix range lookup in Grok of externally imported types [\#311](https://github.com/serulian/compiler/pull/311) ([josephschorr](https://github.com/josephschorr))
+- Fix bug where formatter was removing explicitly declared types on lambda parameters [\#309](https://github.com/serulian/compiler/pull/309) ([josephschorr](https://github.com/josephschorr))
+- Fix intersection between `null` types and other types [\#308](https://github.com/serulian/compiler/pull/308) ([josephschorr](https://github.com/josephschorr))
+- Fix bug where formatter would drop `const` in favor of `var` [\#305](https://github.com/serulian/compiler/pull/305) ([josephschorr](https://github.com/josephschorr))
+- Fix translation of promises [\#304](https://github.com/serulian/compiler/pull/304) ([josephschorr](https://github.com/josephschorr))
+- Fix various panics when accessing graphs under Grok [\#303](https://github.com/serulian/compiler/pull/303) ([josephschorr](https://github.com/josephschorr))
+- Ensure that a return statement is never allowed under a generator [\#302](https://github.com/serulian/compiler/pull/302) ([josephschorr](https://github.com/josephschorr))
+
+**Merged pull requests:**
+
+- Some small internal fixes [\#301](https://github.com/serulian/compiler/pull/301) ([josephschorr](https://github.com/josephschorr))
+
 ## [v0.3.1](https://github.com/serulian/compiler/tree/v0.3.1) (2018-07-15)
 [Full Changelog](https://github.com/serulian/compiler/compare/v0.3.0...v0.3.1)
 
