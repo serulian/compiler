@@ -1,5 +1,5 @@
-///                           [sir        ]
-from webidl`something` import SomeInterface
+///                           [sir        ]  [sf        ]
+from webidl`something` import SomeInterface, someFunction
 
 function DoSomething(something any) {
     ///         [si         ]
