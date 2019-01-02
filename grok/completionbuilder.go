@@ -67,28 +67,49 @@ func (cb *completionBuilder) addType(typedef typegraph.TGTypeDecl) *completionBu
 	})
 }
 
-func (cb *completionBuilder) completionKindForNamedScope(namedScope srg.SRGNamedScope) CompletionKind {
+func (cb *completionBuilder) completionKindForNamedScope(namedScope srg.SRGNamedScope) (CompletionKind, *typegraph.TGMember, *typegraph.TGTypeDecl) {
 	switch namedScope.ScopeKind() {
 	case srg.NamedScopeType:
-		return TypeCompletion
+		srgType, ok := namedScope.GetType()
+		if !ok {
+			panic("Could not retrieve SRG type")
+		}
+
+		foundType, ok := cb.handle.scopeResult.Graph.TypeGraph().GetTypeOrModuleForSourceNode(srgType.GraphNode)
+		if !ok {
+			return ValueCompletion, nil, nil
+		}
+
+		casted := foundType.(typegraph.TGTypeDecl)
+		return TypeCompletion, nil, &casted
 
 	case srg.NamedScopeMember:
-		return MemberCompletion
+		srgMember, ok := namedScope.GetMember()
+		if !ok {
+			panic("Could not retrieve SRG member")
+		}
+
+		foundMember, ok := cb.handle.scopeResult.Graph.TypeGraph().GetTypeMemberForSourceNode(srgMember.GraphNode)
+		if !ok {
+			return ValueCompletion, nil, nil
+		}
+
+		return MemberCompletion, &foundMember, nil
 
 	case srg.NamedScopeImport:
-		return ImportCompletion
+		return ImportCompletion, nil, nil
 
 	case srg.NamedScopeValue:
-		return ValueCompletion
+		return ValueCompletion, nil, nil
 
 	case srg.NamedScopeParameter:
-		return ParameterCompletion
+		return ParameterCompletion, nil, nil
 
 	case srg.NamedScopeVariable:
-		return VariableCompletion
+		return VariableCompletion, nil, nil
 
 	default:
-		return ValueCompletion
+		return ValueCompletion, nil, nil
 	}
 }
 
@@ -165,13 +186,16 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 		return cb
 	}
 
+	completionKind, member, typedef := cb.completionKindForNamedScope(namedScope)
 	return cb.addCompletion(Completion{
-		Kind:          cb.completionKindForNamedScope(namedScope),
+		Kind:          completionKind,
 		Title:         name,
 		Code:          localName,
 		Documentation: highlightParameter(trimDocumentation(docString), name),
 		TypeReference: typeref,
 		SourceRanges:  sourceRangesOf(namedScope),
+		Member:        member,
+		Type:          typedef,
 	})
 }
 
