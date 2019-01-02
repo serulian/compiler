@@ -416,6 +416,15 @@ func (ns SRGNamedScope) Name() (string, bool) {
 	}
 }
 
+// GetType returns the type pointed to by this scope, if any.
+func (ns SRGNamedScope) GetType() (SRGType, bool) {
+	if ns.ScopeKind() == NamedScopeType {
+		return SRGType{ns.GraphNode, ns.srg}, true
+	}
+
+	return SRGType{}, false
+}
+
 // GetMember returns the member pointed to by this scope, if any.
 func (ns SRGNamedScope) GetMember() (SRGMember, bool) {
 	switch ns.Kind() {

@@ -420,6 +420,20 @@ func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphN
 	return TGTypeDecl{node, g}, true
 }
 
+// GetTypeMemberForSourceNode returns the type member for the given source node, if any.
+func (g *TypeGraph) GetTypeMemberForSourceNode(sourceNode compilergraph.GraphNode) (TGMember, bool) {
+	node, found := g.tryGetMatchingTypeGraphNode(sourceNode)
+	if !found {
+		return TGMember{}, false
+	}
+
+	if node.Kind() != NodeTypeMember && node.Kind() != NodeTypeOperator {
+		return TGMember{}, false
+	}
+
+	return TGMember{node, g}, true
+}
+
 // TypeOrMembersUnderPackage returns all types or members defined under the given package.
 func (g *TypeGraph) TypeOrMembersUnderPackage(packageInfo packageloader.PackageInfo) []TGTypeOrMember {
 	var typesOrMembers = make([]TGTypeOrMember, 0)

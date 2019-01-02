@@ -317,6 +317,14 @@ func TestGrokCompletion(t *testing.T) {
 					expectedCompletion.title, grokCompletionSubTest.rangeName, grokCompletionTest.name) {
 					continue
 				}
+
+				switch foundCompletion.Kind {
+				case TypeCompletion:
+					assert.NotNil(t, foundCompletion.Type)
+
+				case MemberCompletion:
+					assert.NotNil(t, foundCompletion.Member)
+				}
 			}
 		}
 	}
